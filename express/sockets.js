@@ -1,43 +1,100 @@
-import ProductManager from "./src/services/ProductManager.js";
+import { messageModel } from "./src/dao/models/messageModel.js";
+import { productManagerDB } from "./src/dao/ProductManagerDB.js";
+import { messageService } from "./src/services/messageService.js";
+import { cartManagerDB } from "./src/dao/CartManagerDB.js";
+
+const ProductService = new productManagerDB();
+const CartService = new cartManagerDB();
+let users = [];
 
 export default (io) => {
-  const productManager = new ProductManager("./data/products.json");
-
   io.on("connection", handleConnection);
 
   async function handleConnection(socket) {
-    console.log(`Nuevo cliente conectado ${socket.id}`);
+    console.log(`Nuevo cliente conectado: ${socket.id}`);
     emitProducts(socket);
 
-    socket.on("add", async (product) => {
+    socket.on("createProduct", async (product) => {
       await addProductAndEmit(product);
     });
+    socket.on("deleteProduct", async (pid) => {
+      await deleteProductAndEmit(pid);
+    });
+    socket.on("addToCart", async (productId) => {
+      try {
+        const cart = await CartService.createCart();
+        const cartId = cart._id;
+        await CartService.addProductByID(cartId, productId);
+        io.emit("cartUpdated");
+        socket.emit("cartId", cartId);
+      } catch (error) {
+        console.error("Error al agregar producto al carrito:", error);
+      }
+    });
 
-    socket.on("delete", async (id) => {
-      console.log("ID del producto a eliminar:", id);
-      await deleteProductAndEmit(id);
+    socket.on("message", async (data) => {
+      await messageService.saveMessage(data);
+      const messages = await messageModel.find().lean();
+      io.emit("messagesLogs", messages);
+    });
+
+    const messages = await messageModel.find().lean();
+    socket.on("userConnect", (data) => {
+      users.push({ id: socket.id, name: data });
+      console.log(users);
+      io.emit("updateUserList", users);
+      socket.emit("messagesLogs", messages);
+      socket.broadcast.emit("newUser", `${data} se ha unido al chat`);
+    });
+    socket.on("registerEmail", (email) => {
+      console.log(email);
+      if (users.map((user) => user.name).includes(email)) {
+        console.log("ya existe");
+        socket.emit("registerResponse", {
+          success: false,
+          message: `El email ${email} ya está registrado`,
+        });
+      } else {
+        console.log("nuevo usuario");
+        socket.emit("registerResponse", {
+          success: true,
+          email: email,
+        });
+        io.emit("updateUserList", users);
+      }
+    });
+    socket.on("disconnect", () => {
+      handleDisconnect(socket);
     });
   }
 
   async function emitProducts(socket) {
-    const productsList = await productManager.getProducts();
-    //agrego un pequeño mod para utilizar img por defecto en caso de no tener thumbnail, despues ver si se puede mejorar
-    productsList.forEach((product) => {
-      if (!product.thumbnails || product.thumbnails.length === 0) {
-        product.thumbnails = ["img/noThumbnails.webp"];
-      }
-    });
-
+    const productsList = await ProductService.getAllProducts();
     socket.emit("products", productsList);
   }
 
   async function addProductAndEmit(product) {
-    await productManager.addProduct(product);
-    emitProducts(io);
+    try {
+      await ProductService.createProduct(product), emitProducts(io);
+    } catch (error) {
+      throw new Error("Error al crear el producto");
+    }
   }
 
-  async function deleteProductAndEmit(id) {
-    await productManager.deleteProduct(id);
-    emitProducts(io);
+  async function deleteProductAndEmit(pid) {
+    try {
+      await ProductService.deleteProduct(pid), emitProducts(io);
+    } catch (error) {
+      throw new Error("Error al eliminar el producto");
+    }
+  }
+
+  function handleDisconnect(socket) {
+    const disconnectedUser = users.find((user) => user.id === socket.id);
+    if (disconnectedUser) {
+      users = users.filter((user) => user.id !== socket.id);
+      io.emit("updateUserList", users);
+      io.emit("newUser", `${disconnectedUser.name} ha abandonado el chat`);
+    }
   }
 };

@@ -1,139 +1,168 @@
 import express from "express";
-import ProductManager from '../services/ProductManager.js';
-import { uploader } from "../middlewares/multer.js";
-import { validateFields } from "../middlewares/productValidator.js";
+import { productManagerDB } from "../dao/ProductManagerDB.js";
+import { uploader } from "../utils/multer.js";
 
-import {
-    handleInternalServerError,
-    handleNotFoundError,
-    handleBadRequestError,
-  } from "../middlewares/errorHandlers.js";
-  
-  const router = express.Router();
-  const productManager = new ProductManager("./data/products.json");
-  
-  router.get("/", getAllProducts);
-  router.get("/:productId", getProductById);
-  router.post("/", uploader.array("thumbnail"), validateFields, addProduct);
-  router.put("/:productId", uploader.array("thumbnail"), updateProduct);
-  router.delete("/:productId", deleteProduct);
-  
-  async function getAllProducts(req, res) {
-    try {
-      const limit = req.query.limit;
-      const products = await productManager.getProducts(limit);
-      res.json(products);
-    } catch (error) {
-      handleInternalServerError(res, error);
-    }
-  }
-  
-  async function getProductById(req, res) {
-    try {
-      const productId = parseInt(req.params.productId);
-      const product = await productManager.getProductById(productId);
-      if (!product) {
-        handleNotFoundError(res, "Producto no encontrado");
-      } else {
-        res.json(product);
-      }
-    } catch (error) {
-      handleInternalServerError(res, error);
-    }
-  }
-  
-  async function addProduct(req, res) {
-    const productData = {
-      body: req.body,
-      files: req.files,
+const router = express.Router();
+const ProductService = new productManagerDB();
+
+router.get("/", async (req, res) => {
+  try {
+    const { page = 1, limit = 10, sort } = req.query;
+
+    const options = {
+      page: Number(page),
+      limit: Number(limit),
+      lean: true,
     };
-  
-    try {
-      const product = processProductData(productData);
-      await productManager.addProduct(product);
-      res.json(product);
-    } catch (error) {
-      handleErrors(res, error);
+
+    const searchQuery = {};
+
+    if (req.query.category) {
+      searchQuery.category = req.query.category;
     }
-  }
-  
-  async function updateProduct(req, res) {
-    try {
-      const productId = parseInt(req.params.productId);
-      const updatedProductFields = req.body;
-      const productData = {
-        body: updatedProductFields,
-        files: req.files,
+
+    if (req.query.title) {
+      searchQuery.title = { $regex: req.query.title, $options: "i" };
+    }
+
+    if (req.query.stock) {
+      const stockNumber = parseInt(req.query.stock);
+      if (!isNaN(stockNumber)) {
+        searchQuery.stock = stockNumber;
+      }
+    }
+
+    if (sort === "asc" || sort === "desc") {
+      options.sort = { price: sort === "asc" ? 1 : -1 };
+    }
+
+    const buildLinks = (products) => {
+      const { prevPage, nextPage } = products;
+      const baseUrl = req.originalUrl.split("?")[0];
+      const sortParam = sort ? `&sort=${sort}` : "";
+
+      const prevLink = prevPage
+        ? `${baseUrl}?page=${prevPage}${sortParam}`
+        : null;
+      const nextLink = nextPage
+        ? `${baseUrl}?page=${nextPage}${sortParam}`
+        : null;
+
+      return {
+        prevPage: prevPage ? parseInt(prevPage) : null,
+        nextPage: nextPage ? parseInt(nextPage) : null,
+        prevLink,
+        nextLink,
       };
-      const existingProduct = await productManager.getProductById(productId);
-      if (!existingProduct) {
-        return handleNotFoundError(res, "Producto no encontrado");
-      }
-  
-      let thumbnail = [];
-  
-      if (productData.files && productData.files.length > 0) {
-        thumbnail = productData.files.map((file) => file.path);
-      }
-  
-      const updatedProduct = {
-        ...existingProduct,
-        ...productData.body,
-        thumbnail:
-          thumbnail.length > 0 ? thumbnail : existingProduct.thumbnail,
-      };
-  
-      if (typeof updatedProduct.price === "string") {
-        updatedProduct.price = parseFloat(updatedProduct.price);
-      }
-      if (typeof updatedProduct.stock === "string") {
-        updatedProduct.stock = parseFloat(updatedProduct.stock);
-      }
-  
-      await productManager.updateProduct(productId, updatedProduct);
-  
-      res.json(updatedProduct);
-    } catch (error) {
-      handleInternalServerError(res, error);
+    };
+
+    const products = await ProductService.getPaginateProducts(
+      searchQuery,
+      options
+    );
+    const { prevPage, nextPage, prevLink, nextLink } = buildLinks(products);
+
+    let requestedPage = parseInt(page);
+    if (isNaN(requestedPage) || requestedPage < 1) {
+      requestedPage = 1;
     }
+
+    if (requestedPage > products.totalPages) {
+      return res
+        .status(404)
+        .json({ error: "La página solicitada está fuera de rango" });
+    }
+
+    const response = {
+      status: "success",
+      payload: products.docs,
+      totalPages: products.totalPages,
+      page: parseInt(page),
+      hasPrevPage: products.hasPrevPage,
+      hasNextPage: products.hasNextPage,
+      prevPage,
+      nextPage,
+      prevLink,
+      nextLink,
+    };
+
+    return res.status(200).send(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
-  
-  async function deleteProduct(req, res) {
-    try {
-      const productId = parseInt(req.params.productId);
-      const deletedProduct = await productManager.deleteProduct(productId);
-      if (!deletedProduct) {
-        return handleBadRequestError(res, "No existe un producto con ese ID");
-      } else {
-        res.json(deletedProduct);
-      }
-    } catch (error) {
-      handleInternalServerError(res, error);
-    }
+});
+
+router.get("/:pid", async (req, res) => {
+  try {
+    const result = await ProductService.getProductByID(req.params.pid);
+    res.send({
+      status: "success",
+      payload: result,
+    });
+  } catch (error) {
+    res.status(400).send({
+      status: "error",
+      message: error.message,
+    });
   }
-  
-  function processProductData(productData) {
-    let thumbnail = [];
-  
-    if (productData.files && productData.files.length > 0) {
-      thumbnail = productData.files.map((file) => file.path);
-      console.log("Archivos subidos:", productData.files);
-    }
-    const product = productData.body;
-  
-    if (product && typeof product.price === "string") {
-      product.price = parseFloat(product.price);
-    }
-    if (product && typeof product.stock === "string") {
-      product.stock = parseFloat(product.stock);
-    }
-  
-    if (thumbnail.length > 0) {
-      product.thumbnail = thumbnail;
-    } else {
-      product.thumbnail = [];
-    }
-    return product;
+});
+
+router.post("/", uploader.array("thumbnails"), async (req, res) => {
+  if (req.files) {
+    req.body.thumbnails = [];
+    req.files.forEach((file) => {
+      req.body.thumbnails.push(file.filename);
+    });
   }
-  
-  export default router;
+  try {
+    const result = await ProductService.createProduct(req.body);
+    res.send({
+      status: "success",
+      payload: result,
+    });
+  } catch (error) {
+    res.status(400).send({
+      status: "error",
+      message: error.message,
+    });
+  }
+});
+
+router.put("/:pid", uploader.array("thumbnails"), async (req, res) => {
+  if (req.files) {
+    req.body.thumbnails = [];
+    req.files.forEach((file) => {
+      req.body.thumbnails.push(file.filename);
+    });
+  }
+  try {
+    const result = await ProductService.updateProduct(req.params.pid, req.body);
+    res.send({
+      status: "success",
+      payload: result,
+    });
+  } catch (error) {
+    res.status(400).send({
+      status: "error",
+      message: error.message,
+    });
+  }
+});
+
+router.delete("/:pid", async (req, res) => {
+  try {
+    const result = await ProductService.deleteProduct(req.params.pid);
+    res.send({
+      status: "success",
+      payload: result,
+    });
+  } catch (error) {
+    res.status(400).send({
+      status: "error",
+      message: error.message,
+    });
+  }
+});
+
+export default router;
