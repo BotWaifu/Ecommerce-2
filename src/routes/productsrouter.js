@@ -108,11 +108,11 @@ router.get("/:pid", async (req, res) => {
   }
 });
 
-router.post("/", uploader.array("thumbnails"), async (req, res) => {
+router.post("/", uploader.array("thumbnail"), async (req, res) => {
   if (req.files) {
-    req.body.thumbnails = [];
+    req.body.thumbnail = [];
     req.files.forEach((file) => {
-      req.body.thumbnails.push(file.filename);
+      req.body.thumbnail.push(file.filename);
     });
   }
   try {
@@ -129,11 +129,11 @@ router.post("/", uploader.array("thumbnails"), async (req, res) => {
   }
 });
 
-router.put("/:pid", uploader.array("thumbnails"), async (req, res) => {
+router.put("/:pid", uploader.array("thumbnail"), async (req, res) => {
   if (req.files) {
-    req.body.thumbnails = [];
+    req.body.thumbnail = [];
     req.files.forEach((file) => {
-      req.body.thumbnails.push(file.filename);
+      req.body.thumbnail.push(file.filename);
     });
   }
   try {

@@ -1,0 +1,18 @@
+<div class="navbar">
+    <a href="/logout">Logout</a>
+</div>
+<div class="box" style="margin-top: 20px;">
+    <h1>Bienvenido!</h1>
+    <div class="box">
+        <p><b>Nombre:</b> {{user.first_name}}</p>
+        <p><b>Apellido:</b> {{user.last_name}}</p>
+        <p><b>Email:</b> {{user.email}}</p>
+        <p><b>Age:</b> {{user.age}}</p>
+        {{#if isAdmin}}
+            <p><b>Rol:</b> Admin</p>
+        {{else}}
+            <p><b>Rol:</b>Usuario</p>
+        {{/if}}
+    </div>
+    <a href="/views/products" class="button-home">Ver Productos</a>
+</div>

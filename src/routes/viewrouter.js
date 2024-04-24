@@ -14,6 +14,8 @@ router.get("/", async (req, res) => {
       title: "Backend / Final - Home",
       style: "styles.css",
       products: products,
+      user: req.session.user,
+      isAdmin: req.session.admin
     });
   } catch (error) {
     res.status(500).json({ error: "Error interno del servidor" });
@@ -23,7 +25,6 @@ router.get("/", async (req, res) => {
 router.get("/products", async (req, res) => {
   try {
     const { page = 1, limit = 8, sort } = req.query;
-    //uso limit 8 solo por cuestiones esteticas para que funcione bien con mi frontEnd
     const options = {
       page: Number(page),
       limit: Number(limit),
@@ -168,5 +169,40 @@ router.get("/products/item/:pid", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+router.get("/login", (req, res) => {
+  res.render(
+      'login',
+      {
+          title: 'Login',
+          style: 'index.css',
+          failLogin: req.session.failLogin ?? false
+      }
+  )
+});
+
+router.get("/register", (req, res) => {
+  res.render(
+      'register',
+      {
+          title: 'Register',
+          style: 'index.css',
+          failRegister: req.session.failRegister ?? false
+      }
+  )
+});
+
+router.get("/logout", (req, res) => {
+  req.session.destroy(error => {
+      if (error) {
+          return res.send({
+              status: "Logout ERROR",
+              body: error
+          });
+      }else{
+          return res.redirect("/login");
+      }
+  })
+})
 
 export default router;

@@ -1,0 +1,19 @@
+<div class="user-box">
+    <h1>Login</h1>
+    <form class="user-form" method="post" action="/api/sessions/login">
+        <label for="email">Email</label>
+        <input class="input-text" type="email" name="email" >
+
+        <label for="password">Password</label>
+        <input class="input-text" type="password" name="password">
+
+        <button type="submit" class="button-home">Log in</button>
+    </form>
+    <span><a href="/register" target="_self"  class="button-home">Register</a></span>
+</div>
+
+{{#if failLogin}}
+    <script type="text/javascript">
+        alert('Login Failed!');
+    </script>
+{{/if}}

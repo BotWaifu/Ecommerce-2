@@ -1,0 +1,29 @@
+<div class="user-box">
+    <h1>Register</h1>
+    <form class="user-form" method="post" action="/api/sessions/register">
+
+        <label for="first_name">First Name</label>
+        <input class="input-text" type="text" name="first_name" id="first_name">
+
+        <label for="last_name">Last Name</label>
+        <input class="input-text" type="text" name="last_name" id="last_name">
+
+        <label for="email">Email</label>
+        <input class="input-text" type="email" name="email" id="email">
+
+        <label for="age">Age</label>
+        <input class="input-text" type="number" name="age" id="age">
+
+        <label for="password">Password</label>
+        <input class="input-text" type="password" name="password" id="password">
+
+        <button type="submit" class="button-home">Register</button>
+    </form>
+    <span><a href="/login" target="_self" class="button-home">Log in</a></span>
+</div>
+
+{{#if failRegister}}
+    <script type="text/javascript">
+        alert('Register Failed!');
+    </script>
+{{/if}}

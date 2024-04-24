@@ -29,7 +29,7 @@ class productManagerFS {
   async createProduct(product) {
     productValidator(product);
 
-    const { title, description, code, price, stock, category, thumbnails } =
+    const { title, description, code, price, stock, category, thumbnail } =
       product;
     const parsedPrice = parseFloat(price);
     const parsedStock = parseFloat(stock);
@@ -44,7 +44,7 @@ class productManagerFS {
       status: true,
       stock: parsedStock,
       category,
-      thumbnails: thumbnails ?? [],
+      thumbnail: thumbnail ?? [],
     };
     products.push(newProduct);
     try {
@@ -64,7 +64,7 @@ class productManagerFS {
       status,
       stock,
       category,
-      thumbnails,
+      thumbnail,
     } = productUpdate;
 
     const updatedPrice = parseFloat(price);
@@ -88,8 +88,8 @@ class productManagerFS {
         updatedStock || products[productIndex].stock;
       products[productIndex].category =
         category || products[productIndex].category;
-      products[productIndex].thumbnails =
-        thumbnails || products[productIndex].thumbnails;
+      products[productIndex].thumbnail =
+        thumbnail || products[productIndex].thumbnail;
       try {
         await writeToFile(this.file, products);
         return products[productIndex];

@@ -1,10 +1,9 @@
 import { messageModel } from "./src/dao/models/messageModel.js";
 import { productManagerDB } from "./src/dao/ProductManagerDB.js";
 import { messageService } from "./src/services/messageService.js";
-import { cartManagerDB } from "./src/dao/CartManagerDB.js";
 
 const ProductService = new productManagerDB();
-const CartService = new cartManagerDB();
+
 let users = [];
 
 export default (io) => {

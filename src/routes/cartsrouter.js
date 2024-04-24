@@ -1,10 +1,10 @@
 import express from "express";
 import { productManagerDB } from "../dao/ProductManagerDB.js";
-import { cartManagerDB } from "../dao/CartManagerDB.js";
+import  CartManagerDB  from "../dao/CartManagerDB.js";
 
 const router = express.Router();
 const ProductService = new productManagerDB();
-const CartService = new cartManagerDB(ProductService);
+const CartService = new CartManagerDB(ProductService);
 
 //Obtener todos los carritos (para hacer pruebas)
 router.get("/", async (req, res) => {

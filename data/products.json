@@ -24,7 +24,7 @@
     "description": "Toalla Anime - Nico Robin One Piece",
     "price": 10,
     "thumbnail": ["../public/img/toalla-nicorobin.jpg"],
-    "code": "T003",
+    "code": "C003",
     "stock": 1
   },
   {
@@ -33,7 +33,7 @@
     "description": "Frazada Anime - Eve",
     "price": 30,
     "thumbnail": ["../public/img/frazada-eve.jpg"],
-    "code": "C001",
+    "code": "C004",
     "stock": 15
   },
   {
@@ -51,7 +51,7 @@
     "description": "Mouse Pad Anime - Sakura Taisen",
     "price": 30,
     "thumbnail": ["../public/img/mousepad-sakurataisen.jpg"],
-    "code": "C001",
+    "code": "C006",
     "stock": 15
   },
   {
@@ -60,7 +60,7 @@
     "description": "Folder Animes Variados",
     "price": 20,
     "thumbnail":[ "../public/img/folderanimesvariados.jpg"],
-    "code": "F007",
+    "code": "C007",
     "stock": 12
   },
   {
@@ -69,7 +69,7 @@
     "description": "Shikishi Cuadro - One Piece",
     "price": 15,
     "thumbnail": ["../public/img/shikishicuadro-onepiece.jpg"],
-    "code": "S008",
+    "code": "C008",
     "stock": 15
   },
   {
@@ -78,7 +78,7 @@
     "description": "Photo Card- Tori Himemiya Ensemble Stars",
     "price": 5,
     "thumbnail": ["../public/img/photocard-tori.jpg"],
-    "code": "P009",
+    "code": "C009",
     "stock": 15
   },
   {
@@ -87,7 +87,7 @@
     "description": "Folder Anime - One Piece",
     "price": 10,
     "thumbnail":[ "../public/img/folder-onepiece.jpg"],
-    "code": "F010",
+    "code": "C010",
     "stock": 10
   },
   {
@@ -96,7 +96,7 @@
     "description": "Vaso Anime - Dragon Ball Z",
     "price": 15,
     "thumbnail": ["../public/img/vaso-dbz.jpg"],
-    "code": "V011",
+    "code": "C011",
     "stock": 2
   },
   {
@@ -105,7 +105,7 @@
     "description": "Almohada Anime - Kakkou no linazuke",
     "price": 30,
     "thumbnail": ["../public/img/almohada-kakkou.jpg"],
-    "code": "A012",
+    "code": "C012",
     "stock": 2
   },
   {
@@ -114,7 +114,7 @@
     "description": "Figura Anime - Vegeta DBZ",
     "price": 50,
     "thumbnail": ["../public/img/figura-vegeta.jpg"],
-    "code": "F013",
+    "code": "C013",
     "stock": 1
   },
   {
@@ -123,7 +123,7 @@
     "description": " Figura Anime - Midoriya Boku no Hero Academia ",
     "price": 50,
     "thumbnail": ["../public/img/figura-midoriya.jpg"],
-    "code": "F014",
+    "code": "C014",
     "stock": 1
   },
   {
@@ -132,7 +132,7 @@
     "description": " Figura Anime - Devil Homura Madogatari",
     "price": 50,
     "thumbnail": ["../public/img/figura-devil-homura.jpg"],
-    "code": "F015",
+    "code": "C015",
     "stock": 1
   }
 ]
