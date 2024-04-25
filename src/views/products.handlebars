@@ -51,7 +51,7 @@
         <div class="tarjeta thumb-wrapper">
           <figure>
             <div class="image-container">
-              {{#if }}
+              {{#if thumbnail}}
               <img class="card-img" src="img/{{thumbnail}}" alt="{{title}}" />
               {{else}}
               <img class="card-img" src="img/noThumbnail.webp" alt="{{title}}" />
@@ -102,7 +102,7 @@ function initializePage() {
 
 function initializeActiveCategory() {
   const currentCategory = new URLSearchParams(window.location.search).get('category');
-  const currentCategoryLink = document.getElementById(`category_${currentCategory}`);
+  const currentCategoryLink = document.getElementById(category_${currentCategory});
   if (currentCategoryLink) {
     currentCategoryLink.classList.add('active');
   } else {
@@ -122,7 +122,7 @@ function initializeSortSelect() {
       currentUrl.searchParams.set('sort', selectedOption);
       window.location.href = currentUrl.toString();
     });
-  }
+  }
 }
 
 </script>
