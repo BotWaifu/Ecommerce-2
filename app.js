@@ -14,41 +14,38 @@ import session from "express-session";
 
 const app = express();
 const port = 8080;
+const uri = "mongodb+srv://maria16leon17:aries0404@cluster0.klbhxor.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
-//pequeño mod para que me lea las imagenes de public, despues ver si se puede mejorar
+
+app.use(
+  session({
+    store: mongoStore.create({
+      mongoUrl: uri,
+      ttl: 60, // 60 minutos
+    }),
+    secret: "secretPhrase",
+    resave: true,
+    saveUninitialized: true,
+    cookie: { maxAge: 60 * 1000 * 60 }, // 60 minutos en milisegundos
+  })
+);
 
 // Routes
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/", viewsRouter);
+app.use("/api/sessions", usersRouter);
 
-// Set up Handlebars
 // Handlebars
 app.engine("handlebars", handlebars.engine());
 app.set("view engine", "handlebars");
 app.set("views", __dirname + "/../views");
 
-const uri = "mongodb+srv://maria16leon17:aries0404@cluster0.klbhxor.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-app.use(
-  session({
-    store: mongoStore.create({ mongoUrl: uri, ttl: 200 }),
-    secret: 'secretPhrase',
-    resave: true,
-    saveUninitialized: true
-  })
-);
-// Error handling for session saving
-
-// User Router
-app.use('/api/sessions', usersRouter);
-
 // Mongoose Connection
-
-
 mongoose.connect(uri, { dbName: "ecommerce" })
   .then(() => {
     console.log("Conexión exitosa a la base de datos");
