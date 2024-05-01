@@ -10,6 +10,8 @@ import mongoose from "mongoose";
 import usersRouter from "./src/routes/usersrouter.js";
 import mongoStore from "connect-mongo";
 import session from "express-session";
+import passport from 'passport';
+import initializatePassport from './src/config/passport.config.js';
 
 
 const app = express();
@@ -20,7 +22,6 @@ const uri = "mongodb+srv://maria16leon17:aries0404@cluster0.klbhxor.mongodb.net/
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
-
 app.use(
   session({
     store: mongoStore.create({
@@ -34,6 +35,10 @@ app.use(
   })
 );
 
+initializatePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Routes
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
@@ -45,8 +50,9 @@ app.engine("handlebars", handlebars.engine());
 app.set("view engine", "handlebars");
 app.set("views", __dirname + "/../views");
 
-// Mongoose Connection
-mongoose.connect(uri, { dbName: "ecommerce" })
+// Mongoose
+mongoose
+  .connect(uri, { dbName: "ecommerce" })
   .then(() => {
     console.log("Conexión exitosa a la base de datos");
     const server = app.listen(port, () =>

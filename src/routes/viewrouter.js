@@ -12,7 +12,7 @@ router.get("/", auth, async (req, res) => {
     const limit = 5;
     const products = await productModel.find().limit(limit).lean();
     res.render("home", {
-      title: "Backend / Final - Home",
+      title: "Anime Store",
       style: "styles.css",
       user: req.session.user,
       products: products,
@@ -26,17 +26,20 @@ router.get("/login", (req, res) => {
   res.render("login", {
     title: "Backend / Final - Login",
     style: "styles.css",
-    failLogin: req.session.failLogin ?? false,
+    message: req.session.messages ?? "",
   });
+  delete req.session.messages;
+  req.session.save();
 });
 
 router.get("/register", (req, res) => {
   res.render("register", {
     title: "Backend / Final - Register",
     style: "styles.css",
-    failRegister: req.session.failRegister ?? false,
-    failReason: req.session.failReason ?? "",
+    message: req.session.messages ?? "",
   });
+  delete req.session.messages;
+  req.session.save();
 });
 
 router.get("/products", auth, async (req, res) => {
@@ -205,3 +208,4 @@ router.post("/logout", (req, res) => {
 });
 
 export default router;
+

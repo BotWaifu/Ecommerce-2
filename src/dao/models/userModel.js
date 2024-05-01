@@ -3,32 +3,32 @@ import mongoose from "mongoose";
 const userCollection = "users";
 
 const userSchema = mongoose.Schema({
-    first_name: {
-        type: String,
-        minLength: 3,
-        require: true
-    },
-    last_name: {
-        type: String,
-        minLength: 3,
-        require: true
-    },
-    email: {
-        type: String,
-        minLength: 5,
-        require: true,
-        unique: true
-    },
-    age: {
-        type: Number,
-        min: 18,
-        require: true
-    },
-    password: {
-        type: String,
-        minLength: 5,
-        require: true
-    },
+  first_name: {
+    type: String,
+    required: true,
+  },
+  last_name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  age: {
+    type: Number,
+    min: 18,
+    required: true,
+  },
+  password: {
+    type: String,
+  },
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
 });
 
 const userModel = mongoose.model(userCollection, userSchema);
