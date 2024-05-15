@@ -7,12 +7,12 @@ import __dirname from "./src/utils/constantsUtil.js";
 import { Server } from 'socket.io';
 import Sockets from "./sockets.js";
 import mongoose from "mongoose";
-import usersRouter from "./src/routes/usersrouter.js";
+import sessionsRouter from "./src/routes/sessionsrouter.js";
 import mongoStore from "connect-mongo";
 import session from "express-session";
 import passport from 'passport';
 import initializatePassport from './src/config/passport.config.js';
-
+import cookieParser from "cookie-parser";
 
 const app = express();
 const port = 8080;
@@ -22,6 +22,7 @@ const uri = "mongodb+srv://maria16leon17:aries0404@cluster0.klbhxor.mongodb.net/
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
+app.use(cookieParser());
 app.use(
   session({
     store: mongoStore.create({
@@ -43,7 +44,7 @@ app.use(passport.session());
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/", viewsRouter);
-app.use("/api/sessions", usersRouter);
+app.use("/api/sessions", sessionsRouter);
 
 // Handlebars
 app.engine("handlebars", handlebars.engine());

@@ -4,7 +4,7 @@
   </div>
   <div class="containerProducts">
     <div class="sidebar">
-      <div class="logo text-center">Anime Store</div>
+      <div class="logo text-center">AnimeStore</div>
       <form action="/products" method="GET">
         <input type="text" id="txtSearch" name="title" placeholder="Buscar producto..." />
       </form>
@@ -33,10 +33,10 @@
         <div class="tarjeta thumb-wrapper">
           <figure>
             <div class="image-container">
-              {{#if thumbnail}}
-              <img class="card-img" src="img/{{thumbnail}}" alt="{{title}}" />
+              {{#if thumbnails}}
+              <img class="card-img" src="img/{{thumbnails}}" alt="{{title}}" />
               {{else}}
-              <img class="card-img" src="img/noThumbnail.webp" alt="{{title}}" />
+              <img class="card-img" src="img/noThumbnails.webp" alt="{{title}}" />
               {{/if}}
               <div class="mask"></div>
               <figcaption>
@@ -106,5 +106,4 @@ function initializeSortSelect() {
     });
   }
 }
-
 </script>
