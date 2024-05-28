@@ -1,5 +1,5 @@
-import { readFromFile, writeToFile } from "../utils/fileManager.js";
-import { generateNewId } from "../utils/idGenerator.js";
+import { readFromFile, writeToFile } from "../../utils/fileManager.js";
+import { generateNewId } from "../../utils/idGenerator.js";
 
 class CartManagerFS {
   constructor(file, ProductService) {

@@ -1,5 +1,5 @@
-import { productModel } from "../dao/models/productModel.js";
-import { productValidator } from "../utils/productValidator.js";
+import { productModel } from "../../models/productModel.js";
+import { productValidator } from "../../utils/productValidator.js";
 
 class productManagerDB {
   async getAllProducts() {
@@ -28,7 +28,7 @@ class productManagerDB {
 
   async createProduct(product) {
     productValidator(product);
-    const { title, description, code, price, stock, category, thumbnails } = product;
+    const { title, description, code, price, stock, category, thumbnail } = product;
 
     try {
       const result = await productModel.create({
@@ -38,7 +38,7 @@ class productManagerDB {
         price,
         stock,
         category,
-        thumbnails: thumbnails ?? [],
+        thumbnail: thumbnail ?? [],
       });
       return result;
     } catch (error) {

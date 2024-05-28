@@ -4,18 +4,20 @@ import jwt, { ExtractJwt } from "passport-jwt";
 import GitHubStrategy from "passport-github2";
 import { createHash, isValidPassword } from "../utils/functionsUtils.js";
 import { userService } from "../services/userService.js";
-import { cartManagerDB } from "../dao/CartManagerDB.js";
+import { cartManagerDB } from "../dao/MongoDB/CartManagerDB.js";
+import config from "./config.js";
 
 const initializePassport = () => {
   const localStratergy = local.Strategy;
   const JWTStrategy = jwt.Strategy;
   const CartService = new cartManagerDB();
 
+
   const admin = {
     first_name: "Coder",
     last_name: "Admin",
-    email: "adminCoder@coder.com",
-    password: "adminCod3r123",
+    email: config.ADMIN_EMAIL,
+    password: config.ADMIN_PASSWORD,
     role: "admin",
   };
 

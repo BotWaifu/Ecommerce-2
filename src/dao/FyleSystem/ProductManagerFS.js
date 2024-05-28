@@ -1,6 +1,6 @@
-import { readFromFile, writeToFile } from "../utils/fileManager.js";
-import { generateNewId } from "../utils/idGenerator.js";
-import { productValidator } from "../utils/productValidator.js";
+import { readFromFile, writeToFile } from "../../utils/fileManager.js";
+import { generateNewId } from "../../utils/idGenerator.js";
+import { productValidator } from "../../utils/productValidator.js";
 
 class productManagerFS {
   constructor(file) {

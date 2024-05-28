@@ -14,6 +14,7 @@ function emptyTable() {
 }
 
 function showProducts(products) {
+  console.log(products); // Agrega este registro para verificar los datos
   products.forEach((product) => {
     const row = createTableRow(product);
     tableBody.appendChild(row);
@@ -26,6 +27,8 @@ socket.on("products", (products) => {
 });
 
 function createTableRow(product) {
+  const imagePath = product.thumbnail && product.thumbnail.length ? "/img/" + product.thumbnail[0] : "/img/noThumbnail.jpg";
+  console.log("Ruta de imagen:", imagePath); // Verifica la ruta de la imagen
   const row = document.createElement("tr");
   row.innerHTML = `
     <td>${product._id}</td>
@@ -35,18 +38,11 @@ function createTableRow(product) {
     <td>${product.category}</td>
     <td>${product.stock}</td>
     <td>${product.code}</td>
-    <td><img src="${
-      product.thumbnails && product.thumbnails.length
-        ? "img/" + product.thumbnails[0]
-        : "img/noThumbnails.webp"
-    }" alt="Thumbnail" class="thumbnail" style="width: 75px;"></td>
-    <td><button class="btn btn-effect btn-dark btn-jif bg-black" onClick="deleteProduct('${
-      product._id
-    }')">Eliminar</button></td>
+    <td><img src="${imagePath}" alt="Thumbnail" class="thumbnail" style="width: 75px;"></td>
+    <td><button class="btn btn-effect btn-dark btn-jif bg-black" onClick="deleteProduct('${product._id}')">Eliminar</button></td>
   `;
   return row;
 }
-
 function deleteProduct(productId) {
   const id = productId;
   console.log("ID del producto a eliminar:", id);
@@ -56,7 +52,7 @@ function deleteProduct(productId) {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const fileInput = document.getElementById("thumbnails");
+  const fileInput = document.getElementById("thumbnail");
   const file = fileInput.files[0];
 
   product = {
@@ -99,7 +95,7 @@ form.addEventListener("submit", async (event) => {
 });
 
 function previewImage() {
-  const fileInput = document.getElementById("thumbnails");
+  const fileInput = document.getElementById("thumbnail");
   const imagePreview = document.getElementById("imagePreview");
   const cancelButtonContainer = document.getElementById(
     "cancelButtonContainer"
@@ -127,7 +123,7 @@ function previewImage() {
   }
 }
 function cancelImageSelection() {
-  const fileInput = document.getElementById("thumbnails");
+  const fileInput = document.getElementById("thumbnail");
   fileInput.value = "";
   const imagePreview = document.getElementById("imagePreview");
   imagePreview.innerHTML = "";
