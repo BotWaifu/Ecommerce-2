@@ -34,6 +34,9 @@ export const userService = {
     try {
       return await userModel.create(user);
     } catch (error) {
+      if (error.code === 11000) { // Código de error para duplicación
+        throw new Error("El usuario con este email ya existe");
+      }
       console.log(error.message);
       throw new Error("Error al registrar usuario");
     }

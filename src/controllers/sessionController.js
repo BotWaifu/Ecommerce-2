@@ -3,14 +3,12 @@ import sessionService from "../services/sessionService.js";
 export const loginJWT = (req, res) => {
   const token = sessionService.generateJWT(req.user);
   sessionService.setTokenCookie(res, token);
-
-  if (req.user) return res.redirect("/home");
+  res.redirect("/home");
 };
 
 export const gitHubCallBackJWT = (req, res) => {
   const token = sessionService.generateJWT(req.user);
   sessionService.setTokenCookie(res, token);
-  req.session.user = req.user;
   res.redirect("/home");
 };
 

@@ -433,3 +433,6 @@ height: 24px;
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+.text-center a {
+  color: #d05ac2;
+}

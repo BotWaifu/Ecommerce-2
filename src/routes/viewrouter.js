@@ -1,31 +1,27 @@
 import { Router } from "express";
-import { passportCall, authorization } from "../utils/authUtil.js";
 import {
   renderLogin,
-  redirectIfLoggedIn,
-  isAdmin,
-  populateCart,
-  getProducts,
-  goHome,
-  renderHome,
   renderRegister,
+  renderHome,
   renderRealTimeProducts,
   renderChat,
   renderCart,
   renderProductDetails,
-  verifyUserSession,
+  goHome,
+  getProducts,
 } from "../controllers/views.controller.js";
+import { passportCall, authorization } from "../utils/authUtil.js";
 
 const router = Router();
 
 router.get("/", goHome);
-router.get("/home", passportCall("jwt"), isAdmin, populateCart, renderHome);
-router.get("/login", passportCall("jwt"), redirectIfLoggedIn, renderLogin);
-router.get("/register", passportCall("jwt"), redirectIfLoggedIn, renderRegister);
-router.get("/products", passportCall("jwt"), isAdmin, populateCart, getProducts);
-router.get("/realtimeproducts", passportCall("jwt"), authorization("admin"), isAdmin, populateCart, renderRealTimeProducts);
-router.get("/chat", passportCall("jwt"), isAdmin, populateCart, verifyUserSession, renderChat);
-router.get("/cart/:cid", passportCall("jwt"), isAdmin, populateCart, verifyUserSession, renderCart);
-router.get("/products/item/:pid", passportCall("jwt"), isAdmin, populateCart, verifyUserSession, renderProductDetails);
+router.get("/home", passportCall("jwt"), renderHome);
+router.get("/login", renderLogin);  // Simplificar login y eliminar redirección
+router.get("/register", renderRegister);  // Simplificar registro y eliminar redirección
+router.get("/products", passportCall("jwt"), getProducts);
+router.get("/realtimeproducts", passportCall("jwt"), authorization("admin"), renderRealTimeProducts);
+router.get("/chat", passportCall("jwt"), renderChat);
+router.get("/cart/:cid", passportCall("jwt"), renderCart);
+router.get("/products/item/:pid", passportCall("jwt"), renderProductDetails);
 
 export default router;

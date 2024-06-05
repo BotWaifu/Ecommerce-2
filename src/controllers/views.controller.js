@@ -56,7 +56,6 @@ export const renderRegister = (req, res) => {
 export const getProducts = async (req, res) => {
   try {
     const { page = 1, limit = 8, sort } = req.query;
-    //uso limit 8 solo por cuestiones esteticas para que funcione bien con mi frontEnd
     const options = {
       page: Number(page),
       limit: Number(limit),
@@ -129,7 +128,7 @@ export const renderRealTimeProducts = async (req, res) => {
   const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
 
   res.render("realTimeProducts", {
-    products: productService.getAllProducts,
+    products: await productService.getAllProducts(),
     style: "styles.css",
     user: req.user,
     userAdmin: req.isAdmin,
@@ -227,7 +226,7 @@ export const populateCart = async (req, res, next) => {
   try {
     const user = req.user;
     if (user && user.role !== "admin" && user.cart) {
-      req.user = await userModel.findOne({ _id: user._id }).populate("cart").lean();
+      req.user = await userModel.findOne({ _id: user._id }).populate("cart.products.product").lean();
     }
     next();
   } catch (error) {
@@ -237,13 +236,12 @@ export const populateCart = async (req, res, next) => {
 };
 
 export const calculateTotalQuantityInCart = (user) => {
-  let totalQuantityInCart = 0;
-  if (user.cart) {
-    totalQuantityInCart = user.cart.products.reduce((total, productInCart) => {
-      return total + productInCart.quantity;
-    }, 0);
+  if (!user || !user.cart || !Array.isArray(user.cart.products)) {
+    return 0;
   }
-  return totalQuantityInCart;
+  return user.cart.products.reduce((total, productInCart) => {
+    return total + productInCart.quantity;
+  }, 0);
 };
 
 export const buildPaginationLinks = (req, products) => {
