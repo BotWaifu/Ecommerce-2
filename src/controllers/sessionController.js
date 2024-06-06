@@ -1,22 +1,25 @@
 import sessionService from "../services/sessionService.js";
+import userDTO from "../dto/userDTO.js";
 
 export const loginJWT = (req, res) => {
   const token = sessionService.generateJWT(req.user);
   sessionService.setTokenCookie(res, token);
-  res.redirect("/home");
+
+  if (req.user) {
+    return res.redirect("/home");
+  }
+  res.redirect("/login");
 };
 
 export const gitHubCallBackJWT = (req, res) => {
   const token = sessionService.generateJWT(req.user);
   sessionService.setTokenCookie(res, token);
+  req.session.user = req.user;
   res.redirect("/home");
 };
 
 export const handleRegister = (req, res) => {
-  res.send({
-    status: "success",
-    message: "Usuario registrado",
-  });
+  res.redirect('/login');
 };
 
 export const handleLogin = (req, res, next) => {
@@ -31,7 +34,7 @@ export const handleLogin = (req, res, next) => {
 };
 
 export const getCurrentUser = (req, res) => {
-  const user = req.user;
+  const user = new userDTO(req.user);
   res.send({ status: "success", payload: user });
 };
 
@@ -41,6 +44,7 @@ export const logOutSession = (req, res) => {
       console.error("Error al destruir la sesión:", err);
       res.status(500).json({ error: "Error interno del servidor" });
     } else {
+      res.clearCookie("coderCookieToken");
       res.redirect("/login");
     }
   });

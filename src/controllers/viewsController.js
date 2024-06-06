@@ -1,7 +1,9 @@
-import userModel from "../models/userModel.js";
+import { userModel } from "../models/userModel.js";
 import { productModel } from "../models/productModel.js";
 import productService from "../services/productService.js";
 import { cartModel } from "../models/cartModel.js";
+import cartService from "../services/cartService.js";
+import ticketRepository from "../repositories/tickets.repository.js";
 
 export const goHome = async (req, res) => {
   try {
@@ -32,6 +34,9 @@ export const renderHome = async (req, res) => {
 };
 
 export const renderLogin = (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.redirect('/home');
+  }
   res.render("login", {
     title: "Backend / Final - Login",
     style: "styles.css",
@@ -40,10 +45,12 @@ export const renderLogin = (req, res) => {
   delete req.session.errorMessage;
   delete req.session.messages;
   req.session.save();
-  return;
 };
 
 export const renderRegister = (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.redirect('/home');
+  }
   res.render("register", {
     title: "Backend / Final - Registro",
     style: "styles.css",
@@ -128,7 +135,7 @@ export const renderRealTimeProducts = async (req, res) => {
   const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
 
   res.render("realTimeProducts", {
-    products: await productService.getAllProducts(),
+    products: productService.getAllProducts,
     style: "styles.css",
     user: req.user,
     userAdmin: req.isAdmin,
@@ -207,9 +214,8 @@ export const logOut = async (req, res) => {
   try {
     res.clearCookie("coderCookieToken");
     res.redirect("/login");
-    return;
   } catch (error) {
-    return res.status(500).json({ status: "error", error: "Internal Server Error" });
+    res.status(500).json({ status: "error", error: "Internal Server Error" });
   }
 };
 
@@ -226,7 +232,7 @@ export const populateCart = async (req, res, next) => {
   try {
     const user = req.user;
     if (user && user.role !== "admin" && user.cart) {
-      req.user = await userModel.findOne({ _id: user._id }).populate("cart.products.product").lean();
+      req.user = await userModel.findOne({ _id: user._id }).populate("cart").lean();
     }
     next();
   } catch (error) {
@@ -236,12 +242,13 @@ export const populateCart = async (req, res, next) => {
 };
 
 export const calculateTotalQuantityInCart = (user) => {
-  if (!user || !user.cart || !Array.isArray(user.cart.products)) {
-    return 0;
+  let totalQuantityInCart = 0;
+  if (user.cart) {
+    totalQuantityInCart = user.cart.products.reduce((total, productInCart) => {
+      return total + productInCart.quantity;
+    }, 0);
   }
-  return user.cart.products.reduce((total, productInCart) => {
-    return total + productInCart.quantity;
-  }, 0);
+  return totalQuantityInCart;
 };
 
 export const buildPaginationLinks = (req, products) => {
@@ -266,4 +273,94 @@ export const verifyUserSession = (req, res, next) => {
     return res.redirect("/login");
   }
   next();
+};
+
+export const purchaseView = async (req, res) => {
+  try {
+    const cart = await cartService.getCartById(req.params.cid);
+    if (!cart) {
+      return res.status(404).json({ error: "El carrito no fue encontrado" });
+    }
+
+    const productsInCart = cart.products;
+    let purchaseSuccess = [];
+    let purchaseError = [];
+    let amount = 0;
+
+    try {
+      amount = await calculateTotalAmount(productsInCart);
+    } catch (error) {
+      return res.status(404).json({ error: error.message });
+    }
+
+    for (let product of productsInCart) {
+      const idproduct = product._id;
+      const quantity = product.quantity;
+      const productInDB = await productService.getProductByID(idproduct);
+      if (!productInDB) {
+        return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
+      }
+
+      if (quantity > productInDB.stock) {
+        purchaseError.push({ ...product, productData: productInDB });
+      } else {
+        purchaseSuccess.push({ ...product, productData: productInDB });
+      }
+    }
+
+    const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
+
+    const purchaseData = {
+      ticketId: ticket._id,
+      amount: ticket.amount,
+      purchaser: ticket.purchaser,
+      productosProcesados: purchaseSuccess,
+      productosNoProcesados: purchaseError,
+      cartId: cart._id,
+    };
+
+    const notProcessed = purchaseError.map((product) => ({
+      _id: product._id,
+      quantity: product.quantity,
+      name: product.productData.title,
+    }));
+
+    const processed = purchaseSuccess.map((product) => ({
+      _id: product._id,
+      quantity: product.quantity,
+      name: product.productData.title,
+    }));
+
+    res.render("purchase", {
+      status: "success",
+      title: "Detalles del Producto",
+      style: "styles.css",
+      payload: purchaseData,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      status: "error",
+      message: "Error interno del servidor",
+    });
+  }
+};
+
+const calculateTotalAmount = async (productsInCart) => {
+  let amount = 0;
+
+  for (let product of productsInCart) {
+    const idproduct = product._id;
+    const quantity = product.quantity;
+    const productInDB = await productService.getProductByID(idproduct);
+
+    if (!productInDB) {
+      throw new Error(`Producto con ID ${idproduct} no encontrado`);
+    }
+
+    const monto = productInDB.price * quantity;
+    amount += monto;
+  }
+
+  return amount;
 };

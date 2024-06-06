@@ -3,29 +3,32 @@ import local from "passport-local";
 import jwt, { ExtractJwt } from "passport-jwt";
 import GitHubStrategy from "passport-github2";
 import { createHash, isValidPassword } from "../utils/functionsUtils.js";
-import { userService } from "../services/userService.js";
-import { cartManagerDB } from "../dao/MongoDB/CartManagerDB.js";
-import dotenv from 'dotenv';
-import User from '../models/userModel.js';  // Asegúrate de que la ruta sea correcta
+import { cartManager } from "../dao/MongoDB/CartManagerDB.js";
+import config from "./config.js";
+import UserManager from "../dao/MongoDB/UserManagerDB.js";
 
-dotenv.config();
+const userService = new UserManager();
 
 const initializePassport = () => {
   const localStrategy = local.Strategy;
   const JWTStrategy = jwt.Strategy;
-  const CartService = new cartManagerDB();
+  const CartService = new cartManager();
 
   const admin = {
     first_name: "Coder",
     last_name: "Admin",
-    email: process.env.ADMIN_EMAIL,
-    password: process.env.ADMIN_PASSWORD,
+    email: config.ADMIN_EMAIL,
+    password: config.ADMIN_PASSWORD,
     role: "admin",
   };
 
-  const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-  const SECRET_ID = process.env.GITHUB_SECRET_ID;
-  const githubCallbackURL = process.env.GITHUB_CALLBACK_URL;
+  const CLIENT_ID = config.CLIENT_ID;
+  const SECRET_ID = config.SECRET_ID;
+  const githubCallbackURL = config.GITHUB_CALLBACK_URL;
+
+  if (!CLIENT_ID || !SECRET_ID || !githubCallbackURL) {
+    throw new Error('Las variables de entorno de GitHub no están definidas correctamente');
+  }
 
   const cookieExtractor = (req) => {
     let token = null;
@@ -81,7 +84,7 @@ const initializePassport = () => {
       },
       async (username, password, done) => {
         try {
-          if (username === admin.email && password === admin.password) {
+          if (username === config.ADMIN_EMAIL && password === config.ADMIN_PASSWORD) {
             const adminUser = admin;
             return done(null, adminUser);
           }
@@ -110,7 +113,7 @@ const initializePassport = () => {
     )
   );
 
-  // Github
+  // GitHub
   passport.use(
     "github",
     new GitHubStrategy(
@@ -157,7 +160,7 @@ const initializePassport = () => {
     new JWTStrategy(
       {
         jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-        secretOrKey: process.env.JWT_SECRET,
+        secretOrKey: config.JWT_SECRET,
       },
       async (jwt_payload, done) => {
         try {

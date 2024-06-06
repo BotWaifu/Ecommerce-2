@@ -18,7 +18,7 @@ const setTokenCookie = (res, token) => {
   res.cookie("coderCookieToken", token, {
     maxAge: 3600000, // 1 hour
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production', // Secure en producción
   });
 };
 
