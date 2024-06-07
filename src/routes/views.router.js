@@ -21,8 +21,8 @@ const router = Router();
 
 router.get("/", goHome);
 router.get("/home", passportCall("jwt"), isAdmin, populateCart, renderHome);
-router.get("/login", redirectIfLoggedIn, renderLogin); // Sin `passportCall`
-router.get("/register", redirectIfLoggedIn, renderRegister); // Sin `passportCall`
+router.get("/login", redirectIfLoggedIn, renderLogin);
+router.get("/register", redirectIfLoggedIn, renderRegister);
 router.get("/products", passportCall("jwt"), isAdmin, populateCart, getProducts);
 router.get("/realtimeproducts", passportCall("jwt"), authorization("admin"), isAdmin, populateCart, renderRealTimeProducts);
 router.get("/chat", passportCall("jwt"), isAdmin, populateCart, verifyUserSession, renderChat);

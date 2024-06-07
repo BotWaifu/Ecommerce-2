@@ -6,43 +6,39 @@ import { logOut } from "../controllers/viewsController.js";
 
 const router = Router();
 
-// GitHub authentication routes
 router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
 
 router.get(
   "/githubcallback",
   passport.authenticate("github", {
-    failureRedirect: "/login?failLogin=true",
+    session: false,
     failureMessage: true,
+    failureRedirect: "/login?failLogin=true",
   }),
   gitHubCallBackJWT
 );
 
-// Registration route
 router.post(
   "/register",
   passport.authenticate("register", {
-    failureRedirect: "/register?failRegister=true",
     failureMessage: true,
+    failureRedirect: "/register?failRegister=true",
   }),
   handleRegister
 );
 
-// Login route
 router.post(
   "/login",
   passport.authenticate("login", {
-    failureRedirect: "/login?failLogin=true",
+    session: false,
     failureMessage: true,
+    failureRedirect: "/login?failLogin=true",
   }),
   handleLogin,
   loginJWT
 );
 
-// Get current user
 router.get("/current", passportCall("jwt"), getCurrentUser);
-
-// Logout route
-router.post("/logout", passportCall("jwt"), logOut, logOutSession);
+router.post("/logout", logOutSession);
 
 export default router;

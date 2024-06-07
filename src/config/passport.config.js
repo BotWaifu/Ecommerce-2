@@ -26,9 +26,10 @@ const initializePassport = () => {
   const SECRET_ID = config.SECRET_ID;
   const githubCallbackURL = config.GITHUB_CALLBACK_URL;
 
-  if (!CLIENT_ID || !SECRET_ID || !githubCallbackURL) {
-    throw new Error('Las variables de entorno de GitHub no están definidas correctamente');
-  }
+  // Añadir console.log para verificar las variables de entorno
+  console.log("GITHUB_CLIENT_ID:", CLIENT_ID);
+  console.log("GITHUB_SECRET_ID:", SECRET_ID);
+  console.log("GITHUB_CALLBACK_URL:", githubCallbackURL);
 
   const cookieExtractor = (req) => {
     let token = null;
@@ -113,7 +114,7 @@ const initializePassport = () => {
     )
   );
 
-  // GitHub
+  // Github
   passport.use(
     "github",
     new GitHubStrategy(
@@ -124,14 +125,14 @@ const initializePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const email = profile._json.email || `${profile._json.login}@github.com`;
+          const email = profile._json.email;
 
           let user = await userService.getUserByEmail(email);
           if (!user) {
             let newUser = {
               first_name: profile._json.login,
               last_name: " ",
-              email: email,
+              email: email || `${profile._json.login}@github.com`,
               password: "",
               age: 0,
               role: "user",

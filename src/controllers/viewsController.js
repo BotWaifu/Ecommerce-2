@@ -7,6 +7,7 @@ import ticketRepository from "../repositories/tickets.repository.js";
 
 export const goHome = async (req, res) => {
   try {
+    console.log('Redirecting to /home');
     res.status(200).redirect("/home");
   } catch (err) {
     console.error(err);
@@ -29,14 +30,13 @@ export const renderHome = async (req, res) => {
       totalQuantityInCart,
     });
   } catch (error) {
+    console.log('Error rendering home, redirecting to /login');
     res.redirect("/login");
   }
 };
 
 export const renderLogin = (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.redirect('/home');
-  }
+  console.log('Rendering login');
   res.render("login", {
     title: "Backend / Final - Login",
     style: "styles.css",
@@ -45,12 +45,11 @@ export const renderLogin = (req, res) => {
   delete req.session.errorMessage;
   delete req.session.messages;
   req.session.save();
+  return;
 };
 
 export const renderRegister = (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.redirect('/home');
-  }
+  console.log('Rendering register');
   res.render("register", {
     title: "Backend / Final - Registro",
     style: "styles.css",
@@ -205,6 +204,7 @@ export const renderProductDetails = async (req, res) => {
 
 export const redirectIfLoggedIn = (req, res, next) => {
   if (req.user) {
+    console.log('User is logged in, redirecting to /home');
     return res.redirect("/home");
   }
   next();
@@ -214,8 +214,9 @@ export const logOut = async (req, res) => {
   try {
     res.clearCookie("coderCookieToken");
     res.redirect("/login");
+    return;
   } catch (error) {
-    res.status(500).json({ status: "error", error: "Internal Server Error" });
+    return res.status(500).json({ status: "error", error: "Internal Server Error" });
   }
 };
 
@@ -270,13 +271,16 @@ export const buildPaginationLinks = (req, products) => {
 export const verifyUserSession = (req, res, next) => {
   if (!req.user) {
     res.clearCookie("connect.sid");
+    console.log('User not logged in, redirecting to /login');
     return res.redirect("/login");
   }
   next();
 };
 
+// Vista para purchase:
 export const purchaseView = async (req, res) => {
   try {
+    // Verificar si el carrito existe
     const cart = await cartService.getCartById(req.params.cid);
     if (!cart) {
       return res.status(404).json({ error: "El carrito no fue encontrado" });
@@ -308,6 +312,9 @@ export const purchaseView = async (req, res) => {
       }
     }
 
+    console.log(cart._id);
+
+    // Crear el ticket
     const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
 
     const purchaseData = {
@@ -319,6 +326,7 @@ export const purchaseView = async (req, res) => {
       cartId: cart._id,
     };
 
+    // Obtener productos que no pudieron procesarse
     const notProcessed = purchaseError.map((product) => ({
       _id: product._id,
       quantity: product.quantity,
@@ -331,6 +339,7 @@ export const purchaseView = async (req, res) => {
       name: product.productData.title,
     }));
 
+    // Renderizar la vista del ticket
     res.render("purchase", {
       status: "success",
       title: "Detalles del Producto",

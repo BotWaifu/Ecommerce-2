@@ -2,10 +2,10 @@ import passport from "passport";
 
 export const passportCall = (strategy) => {
   return async (req, res, next) => {
-    passport.authenticate(strategy, function (error, user, info) {
-      if (error) return next(error);
+    passport.authenticate(strategy, (err, user, info) => {
+      if (err) return next(err);
       if (!user) {
-        return res.redirect('/login?failLogin=true');
+        return res.redirect("/login");
       }
       req.user = user;
       next();
@@ -15,12 +15,8 @@ export const passportCall = (strategy) => {
 
 export const authorization = (role) => {
   return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({ status: "error", error: "No autenticado" });
-    }
-    if (req.user.role !== role) {
-      return res.status(403).json({ status: "error", error: "No autorizado" });
-    }
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+    if (req.user.role !== role) return res.status(403).json({ error: "Forbidden" });
     next();
   };
 };

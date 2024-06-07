@@ -6,6 +6,7 @@ import cartsRouter from "./src/routes/carts.router.js";
 import sessionsRouter from "./src/routes/sessions.router.js";
 import viewsRouter from "./src/routes/views.router.js";
 import handlebars from "express-handlebars";
+import __dirname from "./src/utils/constantsUtil.js";
 import { Server } from "socket.io";
 import Sockets from "./sockets.js";
 import mongoose from "mongoose";
@@ -13,7 +14,6 @@ import passport from "passport";
 import initializatePassport from "./src/config/passport.config.js";
 import cookieParser from "cookie-parser";
 import config from "./src/config/config.js";
-import __dirname from "./src/utils/constantsUtil.js"; // Asegúrate de que __dirname se importe correctamente
 
 const app = express();
 const port = config.PORT;
