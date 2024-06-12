@@ -1,5 +1,6 @@
 import { cartModel } from "../models/cartModel.js";
 import cartDTO from "../dto/cartDTO.js";
+import mongoose from "mongoose";
 
 class CartRepository {
   async getAllCarts() {
@@ -12,6 +13,9 @@ class CartRepository {
   }
 
   async getCartById(cid) {
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      throw new Error("Invalid cart ID");
+    }
     try {
       return await cartModel
         .findOne({ _id: cid })
@@ -26,7 +30,7 @@ class CartRepository {
     }
   }
 
-  async createCart(products) {
+  async createCart(products = {}) {
     try {
       const newCartDTO = new cartDTO(products);
       const cartCreated = await cartModel.create(newCartDTO);
@@ -38,12 +42,15 @@ class CartRepository {
   }
 
   async addProductByID(cid, pid) {
+    if (!mongoose.Types.ObjectId.isValid(cid) || !mongoose.Types.ObjectId.isValid(pid)) {
+      throw new Error("Invalid cart ID or product ID");
+    }
     try {
       const cart = await cartModel.findOne({ _id: cid });
       if (!cart) {
         throw new Error(`El carrito ${cid} no existe`);
       }
-      const existingProductIndex = cart.products.findIndex((product) => product._id._id.toString() === pid);
+      const existingProductIndex = cart.products.findIndex((product) => product._id.toString() === pid);
       if (existingProductIndex !== -1) {
         cart.products[existingProductIndex].quantity++;
       } else {
@@ -58,6 +65,9 @@ class CartRepository {
   }
 
   async deleteProductInCart(cid, pid) {
+    if (!mongoose.Types.ObjectId.isValid(cid) || !mongoose.Types.ObjectId.isValid(pid)) {
+      throw new Error("Invalid cart ID or product ID");
+    }
     try {
       const cart = await cartModel.findOneAndUpdate({ _id: cid }, { $pull: { products: { _id: pid } } }, { new: true });
       return cart;
@@ -68,6 +78,9 @@ class CartRepository {
   }
 
   async updateCart(cid, products) {
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      throw new Error("Invalid cart ID");
+    }
     try {
       const cart = await cartModel.findOneAndUpdate({ _id: cid }, { products });
       return cart;
@@ -78,6 +91,9 @@ class CartRepository {
   }
 
   async updateProductQuantity(cid, productId, quantity) {
+    if (!mongoose.Types.ObjectId.isValid(cid) || !mongoose.Types.ObjectId.isValid(productId)) {
+      throw new Error("Invalid cart ID or product ID");
+    }
     try {
       const cart = await cartModel.findOneAndUpdate(
         { _id: cid, "products._id": productId },
@@ -95,6 +111,9 @@ class CartRepository {
   }
 
   async clearCart(cid) {
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      throw new Error("Invalid cart ID");
+    }
     try {
       const cart = await cartModel.findOne({ _id: cid });
 
@@ -113,6 +132,9 @@ class CartRepository {
   }
 
   async getStockfromProducts(cid) {
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      throw new Error("Invalid cart ID");
+    }
     try {
       const results = await this.dao.getStockfromProducts(cid);
       return new cartDTO(results);
@@ -123,6 +145,9 @@ class CartRepository {
   }
 
   async getTotalQuantityInCart(cid) {
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      throw new Error("Invalid cart ID");
+    }
     try {
       const cart = await cartModel.findOne({ _id: cid }).lean();
       if (!cart) {
@@ -142,4 +167,4 @@ class CartRepository {
   }
 }
 
-export { CartRepository };
+export default CartRepository;

@@ -83,10 +83,8 @@ export const getPaginateProducts = async (req, res) => {
 export const getProductByID = async (req, res) => {
   try {
     const result = await productService.getProductByID(req.params.pid);
-    res.send({
-      status: "success",
-      payload: result,
-    });
+    // Pasar el producto y el usuario a la vista
+    res.render("product-details", { product: result, user: req.user });
   } catch (error) {
     res.status(400).send({
       status: "error",

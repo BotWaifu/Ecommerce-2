@@ -203,7 +203,7 @@ export const renderProductDetails = async (req, res) => {
 };
 
 export const redirectIfLoggedIn = (req, res, next) => {
-  if (req.user) {
+  if (req.isAuthenticated()) {
     console.log('User is logged in, redirecting to /home');
     return res.redirect("/home");
   }
@@ -213,8 +213,15 @@ export const redirectIfLoggedIn = (req, res, next) => {
 export const logOut = async (req, res) => {
   try {
     res.clearCookie("coderCookieToken");
-    res.redirect("/login");
-    return;
+    req.logout(); // Añadir logout de passport para eliminar la sesión
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error al destruir la sesión:", err);
+        res.status(500).json({ error: "Error interno del servidor" });
+      } else {
+        res.redirect("/login");
+      }
+    });
   } catch (error) {
     return res.status(500).json({ status: "error", error: "Internal Server Error" });
   }
@@ -269,7 +276,7 @@ export const buildPaginationLinks = (req, products) => {
 };
 
 export const verifyUserSession = (req, res, next) => {
-  if (!req.user) {
+  if (!req.isAuthenticated()) {
     res.clearCookie("connect.sid");
     console.log('User not logged in, redirecting to /login');
     return res.redirect("/login");

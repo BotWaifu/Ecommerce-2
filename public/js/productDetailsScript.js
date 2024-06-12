@@ -23,6 +23,15 @@ function addToCart(event) {
   const userEmail = document.getElementById("user-email").value;
   const userCartID = document.getElementById("userCartID").value;
 
+  // Verifica si userCartID está vacío
+  console.log("userCartID:", userCartID); // Log para depuración
+
+  if (!userCartID) {
+    console.error("userCartID está vacío");
+    showErrorMessage("El ID del carrito está vacío. Por favor, inicia sesión de nuevo.");
+    return;
+  }
+
   try {
     socket.emit("addToCart", { productId, userEmail, userCartID });
   } catch (error) {

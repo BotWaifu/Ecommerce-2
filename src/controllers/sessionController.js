@@ -23,12 +23,14 @@ export const handleRegister = (req, res) => {
 };
 
 export const handleLogin = (req, res, next) => {
+  console.log('User Cart ID during login:', req.user.cart);
   req.session.user = {
     first_name: req.user.first_name,
     last_name: req.user.last_name,
     email: req.user.email,
     age: req.user.age,
     role: req.user.role,
+    cart: req.user.cart,
   };
   next();
 };

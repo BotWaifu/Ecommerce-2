@@ -15,6 +15,7 @@ export const getAllCarts = async (req, res) => {
 
 export const getCartById = async (req, res) => {
   try {
+    console.log('User in getCartById:', req.user); // Log para verificar la sesión del usuario
     const result = await cartService.getCartById(req.params.cid);
     res.send({
       status: "success",

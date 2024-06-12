@@ -11,7 +11,7 @@ import { Server } from "socket.io";
 import Sockets from "./sockets.js";
 import mongoose from "mongoose";
 import passport from "passport";
-import initializatePassport from "./src/config/passport.config.js";
+import initializePassport from "./src/config/passport.config.js";
 import cookieParser from "cookie-parser";
 import config from "./src/config/config.js";
 
@@ -37,9 +37,16 @@ app.use(
   })
 );
 
-initializatePassport();
+initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use((req, res, next) => {
+  if (req.isAuthenticated() && req.path === '/login') {
+    return res.redirect('/home');
+  }
+  next();
+});
 
 // Routes
 app.use("/", viewsRouter);

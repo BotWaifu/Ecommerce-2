@@ -1,6 +1,6 @@
-import { CartRepository } from "../../repositories/carts.repository.js";
+import CartRepository from "../../repositories/carts.repository.js";
 
-class cartManager {
+class CartManager {
   constructor() {
     this.cartRepository = new CartRepository();
   }
@@ -18,8 +18,28 @@ class cartManager {
   }
 
   async addProductByID(cid, pid) {
-    return await this.cartRepository.addProductByID(cid, pid);
+    if (!mongoose.Types.ObjectId.isValid(cid) || !mongoose.Types.ObjectId.isValid(pid)) {
+      throw new Error("Invalid cart ID or product ID");
+    }
+    try {
+      const cart = await cartModel.findOne({ _id: cid });
+      if (!cart) {
+        throw new Error(`El carrito ${cid} no existe`);
+      }
+      const existingProductIndex = cart.products.findIndex((product) => product.product.toString() === pid);
+      if (existingProductIndex !== -1) {
+        cart.products[existingProductIndex].quantity++;
+      } else {
+        cart.products.push({ product: pid, quantity: 1 });
+      }
+      await cart.save();
+      return cart;
+    } catch (error) {
+      console.error("Error al agregar producto al carrito:", error);
+      throw error;
+    }
   }
+  
 
   async deleteProductInCart(cid, pid) {
     return await this.cartRepository.deleteProductInCart(cid, pid);
@@ -42,4 +62,4 @@ class cartManager {
   }
 }
 
-export { cartManager };
+export default CartManager;

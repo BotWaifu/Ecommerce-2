@@ -6,7 +6,7 @@ form.addEventListener("submit", (e) => {
   const obj = {};
   data.forEach((value, key) => (obj[key] = value));
 
-  fetch("api/sessions/register", {
+  fetch("/api/sessions/register", {
     method: "POST",
     body: JSON.stringify(obj),
     headers: {
@@ -20,13 +20,13 @@ form.addEventListener("submit", (e) => {
       return result.json();
     })
     .then((json) => {
-      console.log(json);
       Swal.fire({
         icon: "success",
         title: "¡Registrado exitosamente!",
         text: "Te has registrado exitosamente!",
       });
       form.reset();
+      window.location.href = '/login';
     })
     .catch((error) => {
       Swal.fire({

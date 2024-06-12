@@ -3,7 +3,7 @@ import local from "passport-local";
 import jwt, { ExtractJwt } from "passport-jwt";
 import GitHubStrategy from "passport-github2";
 import { createHash, isValidPassword } from "../utils/functionsUtils.js";
-import { cartManager } from "../dao/MongoDB/CartManagerDB.js";
+import cartManager from "../dao/MongoDB/CartManagerDB.js";
 import config from "./config.js";
 import UserManager from "../dao/MongoDB/UserManagerDB.js";
 
@@ -26,11 +26,6 @@ const initializePassport = () => {
   const SECRET_ID = config.SECRET_ID;
   const githubCallbackURL = config.GITHUB_CALLBACK_URL;
 
-  // Añadir console.log para verificar las variables de entorno
-  console.log("GITHUB_CLIENT_ID:", CLIENT_ID);
-  console.log("GITHUB_SECRET_ID:", SECRET_ID);
-  console.log("GITHUB_CALLBACK_URL:", githubCallbackURL);
-
   const cookieExtractor = (req) => {
     let token = null;
     if (req && req.cookies) {
@@ -39,7 +34,6 @@ const initializePassport = () => {
     return token;
   };
 
-  // Registro
   passport.use(
     "register",
     new localStrategy(
@@ -53,8 +47,7 @@ const initializePassport = () => {
         try {
           let user = await userService.getUserByEmail(username);
           if (user) {
-            const errorMessage = "¡Registro fallido! El usuario ya existe en la base de datos\n Por favor, ingresá otro correo electrónico.";
-            return done(null, false, errorMessage);
+            return done(null, false, { message: "El usuario ya existe" });
           }
 
           const newUser = {
@@ -70,13 +63,12 @@ const initializePassport = () => {
 
           return done(null, result);
         } catch (error) {
-          return done(error.message);
+          return done(error);
         }
       }
     )
   );
 
-  // Login
   passport.use(
     "login",
     new localStrategy(
@@ -92,13 +84,11 @@ const initializePassport = () => {
 
           const user = await userService.getUserByEmail(username);
           if (!user) {
-            const errorMessage = "¡Inicio de sesión fallido! El usuario no existe\n Por favor, verifica tu correo electrónico e intenta nuevamente.";
-            return done(null, false, errorMessage);
+            return done(null, false, { message: "Usuario no encontrado" });
           }
 
           if (!isValidPassword(user, password)) {
-            const errorMessage = "¡Inicio de sesión fallido! La contraseña es incorrecta\n Por favor, verifica tu contraseña e intenta nuevamente.";
-            return done(null, false, errorMessage);
+            return done(null, false, { message: "Contraseña incorrecta" });
           }
 
           if (!user.cart) {
@@ -108,13 +98,12 @@ const initializePassport = () => {
 
           return done(null, user);
         } catch (error) {
-          return done(error.message);
+          return done(error);
         }
       }
     )
   );
 
-  // Github
   passport.use(
     "github",
     new GitHubStrategy(
@@ -155,7 +144,6 @@ const initializePassport = () => {
     )
   );
 
-  // Login con JWT
   passport.use(
     "jwt",
     new JWTStrategy(

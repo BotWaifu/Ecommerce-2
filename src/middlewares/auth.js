@@ -1,7 +1,12 @@
-export const auth = function (req, res, next) {
-  if (!req.session.user) {
-    return res.redirect("/login");
-  }
-  return next();
+const authorize = (role) => {
+  return (req, res, next) => {
+    if (req.user && req.user.role === role) {
+      next();
+    } else {
+      res.status(403).json({ message: 'Forbidden' });
+    }
+  };
 };
-///esta en deshuso
+
+export default authorize;
+
