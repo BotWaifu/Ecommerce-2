@@ -1,19 +1,21 @@
-import express from "express";
-import session from "express-session";
-import mongoStore from "connect-mongo";
-import productsRouter from "./src/routes/products.router.js";
-import cartsRouter from "./src/routes/carts.router.js";
-import sessionsRouter from "./src/routes/sessions.router.js";
-import viewsRouter from "./src/routes/views.router.js";
-import handlebars from "express-handlebars";
-import __dirname from "./src/utils/constantsUtil.js";
-import { Server } from "socket.io";
-import Sockets from "./sockets.js";
-import mongoose from "mongoose";
-import passport from "passport";
-import initializePassport from "./src/config/passport.config.js";
-import cookieParser from "cookie-parser";
-import config from "./src/config/config.js";
+import express from 'express';
+import session from 'express-session';
+import mongoStore from 'connect-mongo';
+import productsRouter from './src/routes/products.router.js';
+import cartsRouter from './src/routes/carts.router.js';
+import sessionsRouter from './src/routes/sessions.router.js';
+import viewsRouter from './src/routes/views.router.js';
+import handlebars from 'express-handlebars';
+import __dirname from './src/utils/constantsUtil.js';
+import { Server } from 'socket.io';
+import Sockets from './sockets.js';
+import mongoose from 'mongoose';
+import passport from 'passport';
+import initializePassport from './src/config/passport.config.js';
+import cookieParser from 'cookie-parser';
+import config from './src/config/config.js';
+import { generateMockProducts } from './src/utils/mocking.js'; // Usar una exportación nombrada
+import { errorHandler } from './src/middlewares/errorHandler.js'; // Importar el manejador de errores como nombrado
 
 const app = express();
 const port = config.PORT;
@@ -22,7 +24,7 @@ const uri = config.MONGO_URL;
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+app.use(express.static('public'));
 app.use(cookieParser());
 app.use(
   session({
@@ -48,22 +50,28 @@ app.use((req, res, next) => {
   next();
 });
 
+// Endpoint para mocking
+app.get('/mockingproducts', (req, res) => {
+  const mockProducts = generateMockProducts();
+  res.json(mockProducts);
+});
+
 // Routes
-app.use("/", viewsRouter);
-app.use("/api/products", productsRouter);
-app.use("/api/carts", cartsRouter);
-app.use("/api/sessions", sessionsRouter);
+app.use('/', viewsRouter);
+app.use('/api/products', productsRouter);
+app.use('/api/carts', cartsRouter);
+app.use('/api/sessions', sessionsRouter);
 
 // Handlebars
-app.engine("handlebars", handlebars.engine());
-app.set("view engine", "handlebars");
-app.set("views", __dirname + "/../views");
+app.engine('handlebars', handlebars.engine());
+app.set('view engine', 'handlebars');
+app.set('views', __dirname + '/../views');
 
 // Mongoose
 mongoose
-  .connect(uri, { dbName: "ecommerce" })
+  .connect(uri, { dbName: 'ecommerce' })
   .then(() => {
-    console.log("Conexión exitosa a la base de datos");
+    console.log('Conexión exitosa a la base de datos');
     const server = app.listen(port, () => console.log(`Servidor corriendo en http://localhost:${port}`));
 
     // Set up WebSocket server
@@ -71,6 +79,9 @@ mongoose
     Sockets(io);
   })
   .catch((error) => {
-    console.log("No se puede conectar con la DB: " + error);
+    console.log('No se puede conectar con la DB: ' + error);
     process.exit(1);
   });
+
+// Manejador de errores
+app.use(errorHandler);
