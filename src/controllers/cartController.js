@@ -1,5 +1,6 @@
 import cartService from "../services/cartService.js";
 import ticketRepository from "../repositories/tickets.repository.js";
+import productService from "../services/productService.js"; // Asegúrate de importar esto
 
 export const getAllCarts = async (req, res) => {
   try {
@@ -15,7 +16,7 @@ export const getAllCarts = async (req, res) => {
 
 export const getCartById = async (req, res) => {
   try {
-    console.log('User in getCartById:', req.user); // Log para verificar la sesión del usuario
+    console.log('User in getCartById:', req.session.user); // Cambiar a req.session.user
     const result = await cartService.getCartById(req.params.cid);
     res.send({
       status: "success",
@@ -154,7 +155,7 @@ export const purchase = async (req, res) => {
     }
 
     for (let product of productsInCart) {
-      const idproduct = product._id;
+      const idproduct = product.product._id; // Asegúrate de obtener el _id del producto
       const quantity = product.quantity;
       const productInDB = await productService.getProductByID(idproduct);
       if (!productInDB) {
@@ -169,7 +170,7 @@ export const purchase = async (req, res) => {
     }
 
     // Crear el ticket
-    const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
+    const ticket = await ticketRepository.createTicket(req.session.user.email, amount, cart); // Cambiar a req.session.user.email
 
     const purchaseData = {
       ticketId: ticket._id,
@@ -190,7 +191,7 @@ const calculateTotalAmount = async (productsInCart) => {
   let amount = 0;
 
   for (let product of productsInCart) {
-    const idproduct = product._id;
+    const idproduct = product.product._id; // Asegúrate de obtener el _id del producto
     const quantity = product.quantity;
     const productInDB = await productService.getProductByID(idproduct);
 

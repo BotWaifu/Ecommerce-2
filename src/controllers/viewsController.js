@@ -19,14 +19,14 @@ export const renderHome = async (req, res) => {
   try {
     const limit = 5;
     const products = await productModel.find().limit(limit).lean();
-    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+    const totalQuantityInCart = calculateTotalQuantityInCart(req.session.user);
 
     res.render("home", {
       title: "Backend / Final - Home",
       style: "styles.css",
       products: products,
-      user: req.user,
-      userAdmin: req.isAdmin,
+      user: req.session.user,
+      userAdmin: req.session.user.role === "admin",
       totalQuantityInCart,
     });
   } catch (error) {
@@ -92,7 +92,7 @@ export const getProducts = async (req, res) => {
     const products = await productService.getPaginateProducts(searchQuery, options);
     const paginationLinks = buildPaginationLinks(req, products);
     const categories = await productModel.distinct("category");
-    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+    const totalQuantityInCart = calculateTotalQuantityInCart(req.session.user);
 
     let requestedPage = parseInt(page);
     if (isNaN(requestedPage) || requestedPage < 1) {
@@ -118,8 +118,8 @@ export const getProducts = async (req, res) => {
       hasNextPage: products.hasNextPage,
       ...paginationLinks,
       categories: categories,
-      user: req.user,
-      userAdmin: req.isAdmin,
+      user: req.session.user,
+      userAdmin: req.session.user.role === "admin",
       totalQuantityInCart,
     };
 
@@ -131,23 +131,23 @@ export const getProducts = async (req, res) => {
 };
 
 export const renderRealTimeProducts = async (req, res) => {
-  const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+  const totalQuantityInCart = calculateTotalQuantityInCart(req.session.user);
 
   res.render("realTimeProducts", {
     products: productService.getAllProducts,
     style: "styles.css",
-    user: req.user,
-    userAdmin: req.isAdmin,
+    user: req.session.user,
+    userAdmin: req.session.user.role === "admin",
     totalQuantityInCart,
   });
 };
 
 export const renderChat = async (req, res) => {
-  const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+  const totalQuantityInCart = calculateTotalQuantityInCart(req.session.user);
   res.render("chat", {
     style: "styles.css",
-    user: req.user,
-    userAdmin: req.isAdmin,
+    user: req.session.user,
+    userAdmin: req.session.user.role === "admin",
     totalQuantityInCart,
   });
 };
@@ -161,18 +161,18 @@ export const renderCart = async (req, res) => {
     }
     const products = await Promise.all(
       cart.products.map(async (product) => {
-        const productData = await productModel.findOne({ _id: product._id }).lean();
+        const productData = await productModel.findOne({ _id: product.product }).lean();
         return { ...product, product: productData };
       })
     );
-    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+    const totalQuantityInCart = calculateTotalQuantityInCart(req.session.user);
 
     res.render("cart", {
       title: "Backend / Final - cart",
       style: "styles.css",
       payload: products,
-      user: req.user,
-      userAdmin: req.isAdmin,
+      user: req.session.user,
+      userAdmin: req.session.user.role === "admin",
       totalQuantityInCart,
     });
   } catch (error) {
@@ -187,14 +187,14 @@ export const renderProductDetails = async (req, res) => {
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
-    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+    const totalQuantityInCart = calculateTotalQuantityInCart(req.session.user);
 
     res.render("product-details", {
       title: "Detalles del Producto",
       style: "styles.css",
       product: product,
-      user: req.user,
-      userAdmin: req.isAdmin,
+      user: req.session.user,
+      userAdmin: req.session.user.role === "admin",
       totalQuantityInCart,
     });
   } catch (error) {
@@ -228,7 +228,7 @@ export const logOut = async (req, res) => {
 };
 
 export const isAdmin = (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
+  if (req.session.user && req.session.user.role === "admin") {
     req.isAdmin = true;
   } else {
     req.isAdmin = false;
@@ -238,9 +238,10 @@ export const isAdmin = (req, res, next) => {
 
 export const populateCart = async (req, res, next) => {
   try {
-    const user = req.user;
+    const user = req.session.user;
     if (user && user.role !== "admin" && user.cart) {
-      req.user = await userModel.findOne({ _id: user._id }).populate("cart").lean();
+      const populatedUser = await userModel.findOne({ _id: user._id }).populate("cart").lean();
+      req.session.user = populatedUser;
     }
     next();
   } catch (error) {
@@ -276,13 +277,14 @@ export const buildPaginationLinks = (req, products) => {
 };
 
 export const verifyUserSession = (req, res, next) => {
-  if (!req.isAuthenticated()) {
+  if (!req.session.user) {
     res.clearCookie("connect.sid");
     console.log('User not logged in, redirecting to /login');
     return res.redirect("/login");
   }
   next();
 };
+
 
 // Vista para purchase:
 export const purchaseView = async (req, res) => {
@@ -322,7 +324,7 @@ export const purchaseView = async (req, res) => {
     console.log(cart._id);
 
     // Crear el ticket
-    const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
+    const ticket = await ticketRepository.createTicket(req.session.user.email, amount, cart);
 
     const purchaseData = {
       ticketId: ticket._id,

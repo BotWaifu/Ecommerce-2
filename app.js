@@ -16,6 +16,7 @@ import cookieParser from 'cookie-parser';
 import config from './src/config/config.js';
 import { generateMockProducts } from './src/utils/mocking.js'; // Usar una exportación nombrada
 import { errorHandler } from './src/middlewares/errorHandler.js'; // Importar el manejador de errores como nombrado
+import { populateCart } from './src/controllers/viewsController.js'; // Asegúrate de importar populateCart
 
 const app = express();
 const port = config.PORT;
@@ -38,6 +39,9 @@ app.use(
     cookie: { maxAge: 60 * 1000 * 60 }, // 60 minutos en milisegundos
   })
 );
+
+// Colocar populateCart antes de inicializar Passport
+app.use(populateCart);
 
 initializePassport();
 app.use(passport.initialize());

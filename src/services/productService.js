@@ -1,29 +1,29 @@
 import ProductManager from "../dao/MongoDB/ProductManagerDB.js";
 
-const ProductManger = new ProductManager();
+const productManager = new ProductManager(); // Corregido el nombre de la instancia
 
 const getAllProducts = async () => {
-  return await ProductManger.getAllProducts();
+  return await productManager.getAllProducts();
 };
 
 const getPaginateProducts = async (searchQuery, options) => {
-  return await ProductManger.getPaginateProducts(searchQuery, options);
+  return await productManager.getPaginateProducts(searchQuery, options);
 };
 
 const getProductByID = async (pid) => {
-  return await ProductManger.getProductByID(pid);
+  return await productManager.getProductByID(pid);
 };
 
 const createProduct = async (productData) => {
-  return await ProductManger.createProduct(productData);
+  return await productManager.createProduct(productData);
 };
 
 const updateProduct = async (pid, productData) => {
-  return await ProductManger.updateProduct(pid, productData);
+  return await productManager.updateProduct(pid, productData);
 };
 
 const deleteProduct = async (pid) => {
-  return await ProductManger.deleteProduct(pid);
+  return await productManager.deleteProduct(pid);
 };
 
 export default {

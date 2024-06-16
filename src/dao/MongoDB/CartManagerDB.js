@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import CartRepository from "../../repositories/carts.repository.js";
+import { cartModel } from "../../models/cartModel.js";
 
 class CartManager {
   constructor() {
@@ -39,7 +41,6 @@ class CartManager {
       throw error;
     }
   }
-  
 
   async deleteProductInCart(cid, pid) {
     return await this.cartRepository.deleteProductInCart(cid, pid);

@@ -7,17 +7,16 @@ export const passportCall = (strategy) => {
       if (!user) {
         return res.redirect('/login');
       }
-      req.user = user;
+      req.session.user = user; // Almacenar el usuario en la sesión
       next();
     })(req, res, next);
   };
 };
 
-
 export const authorization = (role) => {
   return (req, res, next) => {
-    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
-    if (req.user.role !== role) return res.status(403).json({ error: "Forbidden" });
+    if (!req.session.user) return res.status(401).json({ error: "Unauthorized" });
+    if (req.session.user.role !== role) return res.status(403).json({ error: "Forbidden" });
     next();
   };
 };

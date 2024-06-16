@@ -15,7 +15,7 @@ import {
   renderProductDetails,
   verifyUserSession,
   purchaseView,
-  logOut, // Asegúrate de que esta función esté importada
+  logOut,
 } from "../controllers/viewsController.js";
 
 const router = Router();
@@ -30,7 +30,6 @@ router.get("/chat", passportCall("jwt"), isAdmin, populateCart, verifyUserSessio
 router.get("/cart/:cid", passportCall("jwt"), isAdmin, populateCart, verifyUserSession, renderCart);
 router.get("/products/item/:pid", passportCall("jwt"), isAdmin, populateCart, verifyUserSession, renderProductDetails);
 router.get("/cart/:cid/purchase", passportCall("jwt"), purchaseView);
-router.get("/logout", logOut); // Añadir la ruta de logout
+router.get("/logout", logOut);
 
 export default router;
-

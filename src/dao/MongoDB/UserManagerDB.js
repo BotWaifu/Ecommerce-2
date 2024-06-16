@@ -1,17 +1,12 @@
-// dao/MongoDB/UserManagerDB.js
-import { userModel } from "../../models/userModel.js";
+import { userModel } from '../../models/userModel.js';
 
 class UserManager {
-  async getAllUsers(filter) {
-    return await userModel.find(filter);
+  async getUserByEmail(email) {
+    return await userModel.findOne({ email }).populate('cart');
   }
 
   async getUserById(id) {
-    return await userModel.findById(id);
-  }
-
-  async getUserByEmail(email) {
-    return await userModel.findOne({ email });
+    return await userModel.findById(id).populate('cart');
   }
 
   async createUser(user) {
@@ -19,8 +14,11 @@ class UserManager {
   }
 
   async updateUser(user) {
-    return await userModel.findByIdAndUpdate(user._id, user, { new: true });
+    return await userModel.findByIdAndUpdate(user._id, user, { new: true }).populate('cart');
   }
+
+  // Otros métodos...
 }
 
 export default UserManager;
+
