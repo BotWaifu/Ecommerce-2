@@ -148,29 +148,41 @@ export const purchase = async (req, res) => {
     let purchaseError = [];
     let amount = 0;
 
-    try {
-      amount = await calculateTotalAmount(productsInCart);
-    } catch (error) {
-      return res.status(404).json({ error: error.message });
-    }
-
     for (let product of productsInCart) {
       const idproduct = product.product._id; // Asegúrate de obtener el _id del producto
       const quantity = product.quantity;
-      const productInDB = await productService.getProductByID(idproduct);
-      if (!productInDB) {
-        return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
-      }
+      try {
+        const productInDB = await productService.getProductByID(idproduct);
+        if (!productInDB) {
+          purchaseError.push({ ...product, productData: null });
+          continue;
+        }
 
-      if (quantity > productInDB.stock) {
-        purchaseError.push({ ...product, productData: productInDB });
-      } else {
-        purchaseSuccess.push({ ...product, productData: productInDB });
+        if (quantity > productInDB.stock) {
+          purchaseError.push({ ...product, productData: productInDB });
+        } else {
+          purchaseSuccess.push({ ...product, productData: productInDB });
+          // Actualiza el stock del producto en la base de datos
+          await productService.updateProduct(idproduct, {
+            stock: productInDB.stock - quantity,
+          });
+          amount += productInDB.price * quantity;
+        }
+      } catch (error) {
+        console.error(`Error al buscar el producto ${idproduct}:`, error.message);
+        return res.status(404).json({ error: `Error al buscar el producto ${idproduct}` });
       }
     }
 
     // Crear el ticket
-    const ticket = await ticketRepository.createTicket(req.session.user.email, amount, cart); // Cambiar a req.session.user.email
+    const ticket = await ticketRepository.createTicket(req.session.user.email, amount, cart);
+
+    // Actualizar el carrito para que solo queden los productos no procesados
+    cart.products = purchaseError.map((product) => ({
+      product: product.product._id,
+      quantity: product.quantity,
+    }));
+    await cart.save();
 
     const purchaseData = {
       ticketId: ticket._id,

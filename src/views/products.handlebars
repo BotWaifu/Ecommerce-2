@@ -28,27 +28,28 @@
         </select>
       </div>
       {{#if payload}}
-      {{#each payload}}
-      <article class="col-6 col-xl-3 col-lg-4">
-        <div class="tarjeta thumb-wrapper">
-          <figure>
-            <div class="image-container">
-              {{#if thumbnail}}
-              <img class="card-img" src="img/{{thumbnail}}" alt="{{title}}" />
-              {{else}}
-              <img class="card-img" src="img/noThumbnail.jpg" alt="{{title}}" />
-              {{/if}}
-              <div class="mask"></div>
-              <figcaption>
-                <a href="/products/item/{{_id}}" class="btn btn-effect btn-dark btn-jif bg-black btn-detalles">Ver Detalles</a>
-              </figcaption>
-            </div>
-          </figure>
-          <p>{{title}}</p>
-          <p>${{price}}</p>
-        </div>
-      </article>
-      {{/each}}
+   {{#each payload}}
+<article class="col-6 col-xl-3 col-lg-4">
+  <div class="tarjeta thumb-wrapper">
+    <figure>
+      <div class="image-container">
+        {{#if thumbnail}}
+        <img class="card-img" src="{{thumbnail}}" alt="{{title}}" />
+        {{else}}
+        <img class="card-img" src="/img/noThumbnail.jpg" alt="{{title}}" />
+        {{/if}}
+        <div class="mask"></div>
+        <figcaption>
+          <a href="/products/item/{{_id}}" class="btn btn-effect btn-dark btn-jif bg-black btn-detalles">Ver Detalles</a>
+        </figcaption>
+      </div>
+    </figure>
+    <p>{{title}}</p>
+    <p>${{price}}</p>
+  </div>
+</article>
+{{/each}}
+
       {{else}}
       <h1 class="text-center md:mt-12 text-lg">No hay productos</h1>
       {{/if}}

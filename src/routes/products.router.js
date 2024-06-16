@@ -12,10 +12,10 @@ router.get("/", passportCall('jwt'), getPaginateProducts);
 router.get("/:pid", passportCall('jwt'), getProductByID);
 
 // Ruta para crear un producto, asegurándose de que el usuario esté autenticado y sea admin
-router.post("/", passportCall('jwt'), authorization('admin'), uploader.array("thumbnails"), createProduct);
+router.post("/", passportCall('jwt'), authorization('admin'), uploader.array("thumbnail"), createProduct);
 
 // Ruta para actualizar un producto, asegurándose de que el usuario esté autenticado y sea admin
-router.put("/:pid", passportCall('jwt'), authorization('admin'), uploader.array("thumbnails"), updateProduct);
+router.put("/:pid", passportCall('jwt'), authorization('admin'), uploader.array("thumbnail"), updateProduct);
 
 // Ruta para eliminar un producto, asegurándose de que el usuario esté autenticado y sea admin
 router.delete("/:pid", passportCall('jwt'), authorization('admin'), deleteProduct);

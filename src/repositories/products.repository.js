@@ -33,7 +33,7 @@ class ProductRepository {
 
   async createProduct(product) {
     productValidator(product);
-    const { title, description, code, price, stock, category, thumbnails } = product;
+    const { title, description, code, price, stock, category, thumbnail } = product;
 
     try {
       const result = await productModel.create({
@@ -43,7 +43,7 @@ class ProductRepository {
         price,
         stock,
         category,
-        thumbnails: thumbnails ?? [],
+        thumbnail: thumbnail ?? [],
       });
       return result;
     } catch (error) {

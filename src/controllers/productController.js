@@ -95,9 +95,9 @@ export const getProductByID = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   if (req.files) {
-    req.body.thumbnails = [];
+    req.body.thumbnail = [];
     req.files.forEach((file) => {
-      req.body.thumbnails.push(file.filename);
+      req.body.thumbnail.push(file.filename);
     });
   }
   try {
@@ -118,9 +118,9 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   if (req.files) {
-    req.body.thumbnails = [];
+    req.body.thumbnail = [];
     req.files.forEach((file) => {
-      req.body.thumbnails.push(file.filename);
+      req.body.thumbnail.push(file.filename);
     });
   }
   try {
