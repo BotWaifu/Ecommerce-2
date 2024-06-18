@@ -5,6 +5,7 @@ import productsRouter from './src/routes/products.router.js';
 import cartsRouter from './src/routes/carts.router.js';
 import sessionsRouter from './src/routes/sessions.router.js';
 import viewsRouter from './src/routes/views.router.js';
+import mockingRouter from "./src/routes/mocking.router.js";
 import handlebars from 'express-handlebars';
 import __dirname from './src/utils/constantsUtil.js';
 import { Server } from 'socket.io';
@@ -14,9 +15,7 @@ import passport from 'passport';
 import initializePassport from './src/config/passport.config.js';
 import cookieParser from 'cookie-parser';
 import config from './src/config/config.js';
-import { generateMockProducts } from './src/utils/mocking.js'; // Usar una exportación nombrada
-import { errorHandler } from './src/middlewares/errorHandler.js'; // Importar el manejador de errores como nombrado
-import { populateCart } from './src/controllers/viewsController.js'; // Asegúrate de importar populateCart
+
 
 const app = express();
 const port = config.PORT;
@@ -40,8 +39,7 @@ app.use(
   })
 );
 
-// Colocar populateCart antes de inicializar Passport
-app.use(populateCart);
+
 
 initializePassport();
 app.use(passport.initialize());
@@ -65,6 +63,7 @@ app.use('/', viewsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/sessions', sessionsRouter);
+app.use("/api/mocking", mockingRouter);
 
 // Handlebars
 app.engine('handlebars', handlebars.engine());
@@ -87,5 +86,4 @@ mongoose
     process.exit(1);
   });
 
-// Manejador de errores
-app.use(errorHandler);
+
