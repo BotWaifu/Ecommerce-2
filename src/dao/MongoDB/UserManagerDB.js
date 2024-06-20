@@ -1,23 +1,29 @@
-import { userModel } from '../../models/userModel.js';
+import { UserRepository } from "../../repositories/users.repository.js";
 
 class UserManager {
-  async getUserByEmail(email) {
-    return await userModel.findOne({ email }).populate('cart');
+  constructor() {
+    this.userRepository = new UserRepository();
+  }
+
+  async getAllUsers(filter) {
+    return await this.userRepository.getAllUsers(filter);
   }
 
   async getUserById(id) {
-    return await userModel.findById(id).populate('cart');
+    return await this.userRepository.getUserById(id);
+  }
+
+  async getUserByEmail(email) {
+    return await this.userRepository.getUserByEmail(email);
   }
 
   async createUser(user) {
-    return await userModel.create(user);
+    return await this.userRepository.createUser(user);
   }
 
   async updateUser(user) {
-    return await userModel.findByIdAndUpdate(user._id, user, { new: true }).populate('cart');
+    return await this.userRepository.updateUser(user);
   }
-
-  // Otros métodos...
 }
 
 export default UserManager;

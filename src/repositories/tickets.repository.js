@@ -1,60 +1,26 @@
-import ticketDTO from "../dto/ticketDTO.js";
-import ticketService from "../services/ticketService.js";
-import { userModel } from "../models/userModel.js";
+import ticketModel from "../models/ticketModel.js";
 
-class TicketRepository {
+export class TicketRepository {
   async getAllTickets(limit, page, query, sort) {
-    try {
-      return await ticketService.getAllTickets(limit, page, query, sort);
-    } catch (error) {
-      console.error(error.message);
-      throw new Error("Error fetching tickets from repository");
-    }
+    return await ticketModel
+      .find(query)
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .sort(sort)
+      .populate("purchaser")
+      .populate("products._id")
+      .lean();
   }
 
-  async getTicketById(tid) {
-    try {
-      const result = await ticketService.getTicketById(tid);
-      if (!result) throw new Error(`Ticket with ID ${tid} does not exist!`);
-      return result;
-    } catch (error) {
-      console.error(error.message);
-      throw new Error("Error fetching ticket from repository");
-    }
+  async getTicketById(ticketId) {
+    return await ticketModel.findById(ticketId).populate("purchaser").populate("products._id").lean();
   }
 
-  async createTicket(email, amount, cartId) {
-    try {
-      const user = await userModel.findOne({ email });
-      if (!user) {
-        throw new Error("Purchaser not found");
-      }
-
-      const code = await this.generateTicketCode();
-      const newTicketDTO = new ticketDTO({
-        code,
-        purchaseDateTime: new Date(),
-        amount,
-        products: cartId,
-        purchaser: user._id,
-      });
-
-      return await ticketService.createTicket(newTicketDTO);
-    } catch (error) {
-      console.error(error.message);
-      throw new Error("Error creating ticket in repository");
-    }
+  async getTicketsByUserId(userId) {
+    return await ticketModel.find({ purchaser: userId }).populate("purchaser").populate("products._id").lean();
   }
 
-  async generateTicketCode() {
-    try {
-      const randomCode = Math.floor(Math.random() * 1000) + 1;
-      return randomCode;
-    } catch (error) {
-      console.error(error.message);
-      throw new Error("Error generating random code");
-    }
+  async createTicket(ticket) {
+    return await ticketModel.create(ticket);
   }
 }
-
-export default new TicketRepository();

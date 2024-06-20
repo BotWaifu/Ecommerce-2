@@ -1,51 +1,49 @@
 import CartManager from "../dao/MongoDB/CartManagerDB.js";
 
-const cartManager = new CartManager();
+class CartService {
+  constructor() {
+    this.cartManager = new CartManager();
+  }
 
-const getAllCarts = async () => {
-  return await cartManager.getAllCarts();
-};
+  async getAllCarts() {
+    return await this.cartManager.getAllCarts();
+  }
 
-const getCartById = async (cid) => {
-  return await cartManager.getCartById(cid);
-};
+  async getCartById(cid) {
+    return await this.cartManager.getCartById(cid);
+  }
 
-const createCart = async (products) => {
-  return await cartManager.createCart(products);
-};
+  async createCart(products) {
+    return await this.cartManager.createCart(products);
+  }
 
-const addProductByID = async (cid, pid) => {
-  return await cartManager.addProductByID(cid, pid);
-};
+  async addProductByID(cid, pid) {
+    return await this.cartManager.addProductByID(cid, pid);
+  }
 
-const deleteProductInCart = async (cid, pid) => {
-  return await cartManager.deleteProductInCart(cid, pid);
-};
+  async deleteProductInCart(cid, pid) {
+    return await this.cartManager.deleteProductInCart(cid, pid);
+  }
 
-const updateCart = async (cid, products) => {
-  return await cartManager.updateCart(cid, products);
-};
+  async updateCart(cid, products) {
+    return await this.cartManager.updateCart(cid, products);
+  }
 
-const updateProductQuantity = async (cid, productId, quantity) => {
-  return await cartManager.updateProductQuantity(cid, productId, quantity);
-};
+  async updateProductQuantity(cid, pid, quantity) {
+    return await this.cartManager.updateProductQuantity(cid, pid, quantity);
+  }
 
-const clearCart = async (cid) => {
-  return await cartManager.clearCart(cid);
-};
+  async clearCart(cid) {
+    return await this.cartManager.clearCart(cid);
+  }
 
-const getTotalQuantityInCart = async (cid) => {
-  return await cartManager.getTotalQuantityInCart(cid);
-};
+  async getTotalQuantityInCart(cid) {
+    return await this.cartManager.getTotalQuantityInCart(cid);
+  }
 
-export default {
-  getAllCarts,
-  getCartById,
-  createCart,
-  addProductByID,
-  deleteProductInCart,
-  updateCart,
-  updateProductQuantity,
-  clearCart,
-  getTotalQuantityInCart,
-};
+  async insertArray(cartId, purchaseError) {
+    return await this.cartManager.insertArray(cartId, purchaseError);
+  }
+}
+
+export default new CartService();

@@ -2,67 +2,61 @@ import sessionService from "../services/sessionService.js";
 import userDTO from "../dto/userDTO.js";
 
 export const loginJWT = (req, res) => {
+  req.logger.info(`Intento de inicio de sesión para el usuario: ${req.user.email}`);
   const token = sessionService.generateJWT(req.user);
   sessionService.setTokenCookie(res, token);
-  req.session.user = req.user; // Asegúrate de almacenar el usuario en la sesión
 
-  if (req.session.user) {
+  if (req.user) {
+    req.logger.info(`Usuario ${req.user.email} se ha logueado con JWT exitosamente.`);
     return res.redirect("/home");
+  } else {
+    req.logger.warn("Intento de logueo con JWT fallido, usuario no encontrado.");
+    res.status(401).json({ error: "Usuario no encontrado" });
   }
-  res.redirect("/login");
 };
 
 export const gitHubCallBackJWT = (req, res) => {
+  req.logger.info(`Callback de GitHub para el usuario: ${req.user.email}`);
   const token = sessionService.generateJWT(req.user);
   sessionService.setTokenCookie(res, token);
-  req.session.user = req.user; // Asegúrate de almacenar el usuario en la sesión
+  req.session.user = req.user;
+  req.logger.info(`Usuario ${req.user.email} ha iniciado sesión exitosamente a través de GitHub.`);
   res.redirect("/home");
 };
 
 export const handleRegister = (req, res) => {
-  res.redirect('/login');
+  req.logger.info(`Nuevo registro de usuario: ${req.body.email}`);
+  res.send({
+    status: "success",
+    message: "Usuario registrado",
+  });
 };
 
 export const handleLogin = (req, res, next) => {
-  try {
-    if (!req.user) {
-      throw new Error("User not found in request");
-    }
-
-    req.session.user = {
-      first_name: req.user.first_name,
-      last_name: req.user.last_name,
-      email: req.user.email,
-      age: req.user.age,
-      role: req.user.role,
-      cart: req.user.cart || null, // Asegúrate de que cart esté definido
-    };
-    console.log('User Cart ID during login:', req.session.user.cart); // Usar req.session.user
-    next();
-  } catch (error) {
-    console.error('Error during handleLogin:', error);
-    res.status(500).send({
-      status: "error",
-      message: error.message,
-    });
-  }
+  req.session.user = {
+    first_name: req.user.first_name,
+    last_name: req.user.last_name,
+    email: req.user.email,
+    age: req.user.age,
+    role: req.user.role,
+  };
+  next();
 };
 
 export const getCurrentUser = (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ status: "error", message: "No user session found" });
-  }
-  const user = new userDTO(req.session.user); // Usar req.session.user
+  req.logger.info(`Solicitud para obtener el usuario actual: ${req.user.email}`);
+  const user = new userDTO(req.user);
   res.send({ status: "success", payload: user });
 };
 
 export const logOutSession = (req, res) => {
+  req.logger.info(`Cierre de sesión solicitado por el usuario: ${req.user.email}`);
   req.session.destroy((err) => {
     if (err) {
-      console.error("Error al destruir la sesión:", err);
+      req.logger.error(`Error al destruir la sesión para el usuario ${req.user.email}: ${err.message}`);
       res.status(500).json({ error: "Error interno del servidor" });
     } else {
-      res.clearCookie("coderCookieToken");
+      req.logger.info(`Sesión destruida exitosamente para el usuario ${req.user.email}`);
       res.redirect("/login");
     }
   });

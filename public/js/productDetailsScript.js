@@ -23,19 +23,9 @@ function addToCart(event) {
   const userEmail = document.getElementById("user-email").value;
   const userCartID = document.getElementById("userCartID").value;
 
-  // Verifica si userCartID está vacío
-  console.log("userCartID:", userCartID); // Log para depuración
-
-  if (!userCartID) {
-    console.error("userCartID está vacío");
-    showErrorMessage("El ID del carrito está vacío. Por favor, inicia sesión de nuevo.");
-    return;
-  }
-
   try {
     socket.emit("addToCart", { productId, userEmail, userCartID });
   } catch (error) {
-    console.error("Error al agregar producto al carrito:", error);
     showErrorMessage("Ocurrió un error al agregar el producto al carrito");
   }
 }
@@ -46,7 +36,6 @@ function updateCartQuantity(data) {
 }
 
 function showSuccessMessage(cartId) {
-  console.log("ID del carrito nuevo", cartId);
   Swal.fire({
     icon: "success",
     title: "¡Producto agregado al carrito!",

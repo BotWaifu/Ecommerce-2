@@ -3,25 +3,26 @@ import {
   getAllCarts,
   getCartById,
   createCart,
-  addProductByID,
+  addProductToCart,
   deleteProductInCart,
   updateCart,
   updateProductQuantity,
   clearCart,
-  purchase,
+  purchaseCart,
 } from "../controllers/cartController.js";
-import authorize from "../middlewares/auth.js"; // Asegúrate de importar el middleware de autorización
+import { addLogger } from "../utils/logger.js";
 
 const router = express.Router();
 
-router.get("/", authorize('user'), getAllCarts);
-router.get("/:cid", authorize('user'), getCartById);
-router.post("/", authorize('user'), createCart);
-router.post("/:cid/product/:pid", authorize('user'), addProductByID);
-router.delete("/:cid/product/:pid", authorize('user'), deleteProductInCart);
-router.put("/:cid", authorize('user'), updateCart);
-router.put("/:cid/product/:pid", authorize('user'), updateProductQuantity);
-router.delete("/:cid", authorize('user'), clearCart);
-router.get("/:cid/purchase", authorize('user'), purchase);
+router.use(addLogger);
+router.get("/", getAllCarts);
+router.get("/:cid", getCartById);
+router.post("/", createCart);
+router.post("/:cid/products/:pid", addProductToCart);
+router.delete("/:cid/products/:pid", deleteProductInCart);
+router.put("/:cid", updateCart);
+router.put("/:cid/products/:pid", updateProductQuantity);
+router.delete("/:cid", clearCart);
+router.get("/:cid/purchase", purchaseCart);
 
 export default router;

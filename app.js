@@ -5,6 +5,7 @@ import productsRouter from './src/routes/products.router.js';
 import cartsRouter from './src/routes/carts.router.js';
 import sessionsRouter from './src/routes/sessions.router.js';
 import viewsRouter from './src/routes/views.router.js';
+import loggerRouter from "./src/routes/logger.router.js";
 import mockingRouter from "./src/routes/mocking.router.js";
 import handlebars from 'express-handlebars';
 import __dirname from './src/utils/constantsUtil.js';
@@ -40,7 +41,6 @@ app.use(
 );
 
 
-
 initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
@@ -64,6 +64,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/sessions', sessionsRouter);
 app.use("/api/mocking", mockingRouter);
+app.use("/loggerTest", loggerRouter);
 
 // Handlebars
 app.engine('handlebars', handlebars.engine());
@@ -85,5 +86,3 @@ mongoose
     console.log('No se puede conectar con la DB: ' + error);
     process.exit(1);
   });
-
-

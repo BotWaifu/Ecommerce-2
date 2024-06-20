@@ -1,37 +1,25 @@
-import ticketModel from "../../models/ticketModel.js";
+import { TicketRepository } from "../../repositories/tickets.repository.js";
 
 class TicketManager {
-  async getAllTickets() {
-    try {
-      const tickets = await ticketModel.find().populate("purchaser").populate("products.product").lean();
-      return tickets;
-    } catch (error) {
-      throw error;
-    }
+  constructor() {
+    this.ticketRepository = new TicketRepository();
+  }
+
+  async getAllTickets(limit, page, query, sort) {
+    return await this.ticketRepository.getAllTickets(limit, page, query, sort);
   }
 
   async getTicketById(ticketId) {
-    return await ticketModel.findOne({ _id: ticketId });
+    return await this.ticketRepository.getTicketById(ticketId);
   }
 
   async getTicketsByUserId(userId) {
-    try {
-      const tickets = await ticketModel.find({ userId: userId });
-      return tickets;
-    } catch (error) {
-      throw error;
-    }
+    return await this.ticketRepository.getTicketsByUserId(userId);
   }
 
-  async createTicket(ticket) {
-    try {
-      const newTicket = await ticketModel.create(ticket);
-      return newTicket;
-    } catch (error) {
-      throw error;
-    }
+  async createTicket(ticketData) {
+    return await this.ticketRepository.createTicket(ticketData);
   }
 }
 
-const ticketDao = new TicketManager();
-export default ticketDao;
+export default TicketManager;

@@ -1,1 +1,14 @@
-node_modules/
+# Ignorar la carpeta node_modules
+node_modules
+
+# Archivos de log
+logs
+*.log
+
+# Otros
+.DS_Store
+.env
+.env.local
+.env.development
+.env.test.local
+.env.production

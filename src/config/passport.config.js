@@ -3,7 +3,7 @@ import local from "passport-local";
 import jwt, { ExtractJwt } from "passport-jwt";
 import GitHubStrategy from "passport-github2";
 import { createHash, isValidPassword } from "../utils/functionsUtils.js";
-import cartManager from "../dao/MongoDB/CartManagerDB.js";
+import CartManager from "../dao/MongoDB/CartManagerDB.js";
 import config from "./config.js";
 import UserManager from "../dao/MongoDB/UserManagerDB.js";
 
@@ -12,7 +12,7 @@ const userService = new UserManager();
 const initializePassport = () => {
   const localStrategy = local.Strategy;
   const JWTStrategy = jwt.Strategy;
-  const CartService = new cartManager();
+  const cartService = new CartManager();
 
   const admin = {
     first_name: "Coder",
@@ -22,8 +22,8 @@ const initializePassport = () => {
     role: "admin",
   };
 
-  const CLIENT_ID = config.CLIENT_ID;
-  const SECRET_ID = config.SECRET_ID;
+  const CLIENT_ID = config.GITHUB_CLIENT_ID;
+  const SECRET_ID = config.GITHUB_SECRET_ID;
   const githubCallbackURL = config.GITHUB_CALLBACK_URL;
 
   const cookieExtractor = (req) => {
@@ -55,7 +55,7 @@ const initializePassport = () => {
             last_name,
             email,
             age,
-            cart: await CartService.createCart(),
+            cart: await cartService.createCart(),
             password: createHash(password),
             role: role || "user",
           };
@@ -92,7 +92,7 @@ const initializePassport = () => {
           }
 
           if (!user.cart) {
-            user.cart = await CartService.createCart();
+            user.cart = await cartService.createCart();
             await userService.updateUser(user);
           }
 
@@ -125,13 +125,13 @@ const initializePassport = () => {
               password: "",
               age: 0,
               role: "user",
-              cart: await CartService.createCart(),
+              cart: await cartService.createCart(),
             };
             let result = await userService.createUser(newUser);
             done(null, result);
           } else {
             if (!user.cart) {
-              user.cart = await CartService.createCart();
+              user.cart = await cartService.createCart();
               await userService.updateUser(user);
             }
 

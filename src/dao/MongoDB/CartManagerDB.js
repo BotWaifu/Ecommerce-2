@@ -1,6 +1,10 @@
-import mongoose from "mongoose";
-import CartRepository from "../../repositories/carts.repository.js";
-import { cartModel } from "../../models/cartModel.js";
+
+// CartManagerDB.js
+import { CartRepository } from "../../repositories/carts.repository.js";
+
+// Resto del código permanece igual
+
+
 
 class CartManager {
   constructor() {
