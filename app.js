@@ -5,8 +5,8 @@ import productsRouter from './src/routes/products.router.js';
 import cartsRouter from './src/routes/carts.router.js';
 import sessionsRouter from './src/routes/sessions.router.js';
 import viewsRouter from './src/routes/views.router.js';
-import loggerRouter from "./src/routes/logger.router.js";
-import mockingRouter from "./src/routes/mocking.router.js";
+import loggerRouter from './src/routes/logger.router.js';
+import mockingRouter from './src/routes/mocking.router.js';
 import handlebars from 'express-handlebars';
 import __dirname from './src/utils/constantsUtil.js';
 import { Server } from 'socket.io';
@@ -16,7 +16,7 @@ import passport from 'passport';
 import initializePassport from './src/config/passport.config.js';
 import cookieParser from 'cookie-parser';
 import config from './src/config/config.js';
-
+import { addLogger } from './src/utils/logger.js'; // Importa el middleware de logging
 
 const app = express();
 const port = config.PORT;
@@ -40,6 +40,12 @@ app.use(
   })
 );
 
+// Agregar el middleware de logging antes de las rutas
+app.use((req, res, next) => {
+  console.log('Adding logger middleware');
+  next();
+});
+app.use(addLogger);
 
 initializePassport();
 app.use(passport.initialize());
@@ -63,8 +69,8 @@ app.use('/', viewsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/sessions', sessionsRouter);
-app.use("/api/mocking", mockingRouter);
-app.use("/loggerTest", loggerRouter);
+app.use('/api/mocking', mockingRouter);
+app.use('/loggerTest', loggerRouter);
 
 // Handlebars
 app.engine('handlebars', handlebars.engine());

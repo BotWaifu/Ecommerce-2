@@ -26,7 +26,6 @@ form.addEventListener("submit", (e) => {
         text: "Te has registrado exitosamente!",
       });
       form.reset();
-      window.location.href = '/login';
     })
     .catch((error) => {
       Swal.fire({

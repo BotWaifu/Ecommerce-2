@@ -10,7 +10,7 @@ import UserManager from "../dao/MongoDB/UserManagerDB.js";
 const userService = new UserManager();
 
 const initializePassport = () => {
-  const localStrategy = local.Strategy;
+  const localStratergy = local.Strategy;
   const JWTStrategy = jwt.Strategy;
   const cartService = new CartManager();
 
@@ -36,7 +36,7 @@ const initializePassport = () => {
 
   passport.use(
     "register",
-    new localStrategy(
+    new localStratergy(
       {
         passReqToCallback: true,
         usernameField: "email",
@@ -47,8 +47,10 @@ const initializePassport = () => {
         try {
           let user = await userService.getUserByEmail(username);
           if (user) {
-            return done(null, false, { message: "El usuario ya existe" });
+            const errorMessage = "¡Registro fallido! El usuario ya existe en la base de datos\n Por favor, ingresá otro correo electrónico.";
+            return done(null, false, errorMessage);
           }
+
 
           const newUser = {
             first_name,
@@ -69,40 +71,43 @@ const initializePassport = () => {
     )
   );
 
-  passport.use(
-    "login",
-    new localStrategy(
-      {
-        usernameField: "email",
-      },
-      async (username, password, done) => {
-        try {
-          if (username === config.ADMIN_EMAIL && password === config.ADMIN_PASSWORD) {
-            const adminUser = admin;
-            return done(null, adminUser);
+    //Login
+    passport.use(
+      "login",
+      new localStratergy(
+        {
+          usernameField: "email",
+        },
+        async (username, password, done) => {
+          try {
+            if (username === config.ADMIN_EMAIL && password === config.ADMIN_PASSWORD) {
+              const adminUser = admin;
+              return done(null, adminUser);
+            }
+  
+            const user = await userService.getUserByEmail(username);
+            if (!user) {
+              const errorMessage = "¡Inicio de sesión fallido! El usuario no existe\n Por favor, verifica tu correo electrónico e intenta nuevamente.";
+              return done(null, false, errorMessage);
+            }
+  
+            if (!isValidPassword(user, password)) {
+              const errorMessage = "¡Inicio de sesión fallido! La contraseña es incorrecta\n Por favor, verifica tu contraseña e intenta nuevamente.";
+              return done(null, false, errorMessage);
+            }
+  
+            if (!user.cart) {
+              user.cart = await CartService.createCart();
+              await userService.updateUser(user);
+            }
+  
+            return done(null, user);
+          } catch (error) {
+            return done(error.message);
           }
-
-          const user = await userService.getUserByEmail(username);
-          if (!user) {
-            return done(null, false, { message: "Usuario no encontrado" });
-          }
-
-          if (!isValidPassword(user, password)) {
-            return done(null, false, { message: "Contraseña incorrecta" });
-          }
-
-          if (!user.cart) {
-            user.cart = await cartService.createCart();
-            await userService.updateUser(user);
-          }
-
-          return done(null, user);
-        } catch (error) {
-          return done(error);
         }
-      }
-    )
-  );
+      )
+    );
 
   passport.use(
     "github",

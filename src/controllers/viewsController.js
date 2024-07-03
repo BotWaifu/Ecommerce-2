@@ -254,14 +254,13 @@ export const populateCart = async (req, res, next) => {
 };
 
 export const calculateTotalQuantityInCart = (user) => {
-  let totalQuantityInCart = 0;
-  if (user.cart) {
-    totalQuantityInCart = user.cart.products.reduce((total, productInCart) => {
-      return total + productInCart.quantity;
-    }, 0);
+  // Comprobar si el usuario tiene un carrito y si tiene productos
+  if (!user || !user.cart || !Array.isArray(user.cart.products)) {
+    return 0; // Devolver 0 si no hay productos o si alguna propiedad no está definida
   }
-  return totalQuantityInCart;
+  return user.cart.products.reduce((total, productInCart) => total + productInCart.quantity, 0);
 };
+
 
 export const buildPaginationLinks = (req, products) => {
   const { prevPage, nextPage } = products;

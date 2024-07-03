@@ -1,6 +1,4 @@
-import dotenv from "dotenv";
-
-const environment = "DEVELOPMENT";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -15,5 +13,5 @@ export default {
   ADMIN_EMAIL: process.env.ADMIN_EMAIL,
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
   PERSISTENCE: process.env.PERSISTENCE,
-  NODE_ENV: process.env.ENVIRONMENT,
+  NODE_ENV: process.env.NODE_ENV || 'development', // Utiliza NODE_ENV y asegúrate de que esté en minúsculas por defecto
 };

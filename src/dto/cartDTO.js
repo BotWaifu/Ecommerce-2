@@ -1,18 +1,13 @@
-export default class cartDTO {
-    constructor(cart) {
-      this.id = cart.id;
-      if (Array.isArray(cart)) {
-        this.products = cart.map((product) => {
-          return {
-            id: product.product,
-            quantity: product.quantity,
-            title: product.title,
-            price: product.price,
-            thumbnail: product.thumbnail,
-          };
-        });
-      } else {
-        this.products = [];
-      }
-    }
+class CartDTO {
+  constructor(cart) {
+    this.id = cart._id;
+    this.products = cart.products.map((item) => {
+      return {
+        _id: item._id,
+        quantity: item.quantity,
+      };
+    });
   }
+}
+
+export default CartDTO;

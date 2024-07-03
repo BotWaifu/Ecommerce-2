@@ -1,22 +1,41 @@
 import passport from 'passport';
 
 export const passportCall = (strategy) => {
-  return (req, res, next) => {
-    passport.authenticate(strategy, (err, user, info) => {
-      if (err) return next(err);
+  return async (req, res, next) => {
+    passport.authenticate(strategy, function (error, user, info) {
+      if (error) return next(error);
       if (!user) {
-        return res.redirect('/login');
+        req.session.errorMessage = info.messages ? info.messages : info.toString();
       }
-      req.session.user = user; // Almacenar el usuario en la sesión
+      req.user = user;
       next();
     })(req, res, next);
   };
 };
 
 export const authorization = (role) => {
+  return async (req, res, next) => {
+    if (!req.user) {
+      return res.render("error", { title: "Error", message: "Unauthorized" });
+    }
+    if (req.user.role !== "admin") {
+      return res.render("error", {
+        message: "No posee los permisos requeridos para ver ésta página",
+        title: "Backend / Error",
+        style: "styles.css",
+        redirect: "/",
+      });
+    }
+    next();
+  };
+};
+
+//este lo vimos con el profe, quizas lo utilizo mas adelante
+export const handlePolicies = (policies) => {
   return (req, res, next) => {
-    if (!req.session.user) return res.status(401).json({ error: "Unauthorized" });
-    if (req.session.user.role !== role) return res.status(403).json({ error: "Forbidden" });
+    if (policies[0].toUpperCase() === "PUBLIC") return next();
+    if (!req.user) return res.status(401).send({ status: "error", error: "No autenticado" });
+    if (!policies.includes(req.user.role.toUpperCase())) return res.status(403).send({ status: "error", error: "No autorizado" });
     next();
   };
 };
