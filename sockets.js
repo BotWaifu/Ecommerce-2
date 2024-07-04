@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { messageModel } from "./src/models/messageModel.js";
 import ProductManager from "./src/dao/MongoDB/ProductManagerDB.js";
 import MessageManager from "./src/dao/MongoDB/MessageManagerDB.js";
@@ -30,10 +29,15 @@ export default (io) => {
       }
     };
 
-    const deleteProduct = async (pid) => {
+    const deleteProduct = async (pid, userRole, userId) => {
       try {
-        await ProductService.deleteProduct(pid);
-        await emitProducts();
+        const product = await ProductService.getProductByID(pid);
+        if (userRole === "admin" || product.owner === userId) {
+          await ProductService.deleteProduct(pid);
+          await emitProducts();
+        } else {
+          console.log("error", "No tienes permiso para eliminar este producto");
+        }
       } catch (error) {
         console.error("Error al eliminar producto:", error);
       }
@@ -42,20 +46,8 @@ export default (io) => {
     // Manejar eventos del socket relacionados con productos
     socket.on("createProduct", addProduct);
     socket.on("deleteProduct", deleteProduct);
-    // Manejo de inicialización del carrito
-    socket.on("initialize", async ({ userCartID }) => {
-      console.log('Cart ID during initialization:', userCartID); // Log para verificar el ID del carrito
-      // Puedes hacer algo con el ID del carrito aquí si es necesario
-    });
-
-    // Manejo del carrito
     socket.on("addToCart", async ({ productId, userEmail, userCartID }) => {
       try {
-        console.log('User Cart ID:', userCartID); // Log para verificar el ID del carrito
-        if (!mongoose.Types.ObjectId.isValid(productId) || !mongoose.Types.ObjectId.isValid(userCartID)) {
-          throw new Error("Invalid productId or userCartID");
-        }
-    
         if (userEmail === config.ADMIN_EMAIL) {
           const errorMessage = "No se pueden agregar productos al carrito del administrador";
           socket.emit("cartNotUpdated", errorMessage);
@@ -67,29 +59,22 @@ export default (io) => {
         }
       } catch (error) {
         console.error("Error al agregar producto al carrito:", error);
-        socket.emit("cartNotUpdated", error.message);
       }
     });
-    
     await emitProducts();
 
     // Manejo de chat
     socket.on("message", async (data) => {
-      try {
-        await messageService.addMessage(data);
-        const messages = await messageService.getMessages();
-        io.emit("messagesLogs", messages);
-      } catch (error) {
-        console.error("Error al guardar el mensaje:", error);
-        socket.emit("messageNotSaved", error.message);
-      }
+      await messageService.saveMessage(data);
+      const messages = await messageModel.find().lean();
+      io.emit("messagesLogs", messages);
     });
 
     socket.on("userConnect", async (data) => {
       users.push({ id: socket.id, name: data });
-      socket.emit("newUser", `Bienvenido ${data}`);
+      socket.emit(`newUser`, `Bienvenido ${data}`);
       io.emit("updateUserList", users);
-      const messages = await messageService.getMessages();
+      const messages = await messageModel.find().lean();
       socket.emit("messagesLogs", messages);
       socket.broadcast.emit("newUser", `${data} se ha unido al chat`);
     });
@@ -103,7 +88,7 @@ export default (io) => {
       if (user) {
         users = users.filter((user) => user.id !== socket.id);
         io.emit("updateUserList", users);
-        socket.broadcast.emit("newUser", `${user.name} se ha ido del chat`);
+        socket.broadcast.emit(`newUser`, `${user.name} se ha ido del chat`);
       }
     });
 
