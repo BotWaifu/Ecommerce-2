@@ -31,9 +31,11 @@ class UserRepository {
     try {
       return await userModel.create(user);
     } catch (error) {
-      throw new Error("Error al registrar usuario");
+      console.error('Error al registrar usuario:', error);  // Añade esta línea para imprimir el error en la consola
+      throw new Error(`Error al registrar usuario: ${error.message}`);
     }
   }
+  
 
   async updateUser(uid, user) {
     try {

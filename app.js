@@ -18,6 +18,8 @@ import passport from 'passport';
 import initializePassport from './src/config/passport.config.js';
 import cookieParser from 'cookie-parser';
 import config from './src/config/config.js';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUiExpress from 'swagger-ui-express';
 
 
 const app = express();
@@ -56,6 +58,20 @@ app.use("/api/mocking", mockingRouter);
 app.use("/loggerTest", loggerRouter);
 app.use("/mail", mailRouter);
 app.use("/api/users", usersRouter);
+
+const swaggerOptions = {
+  definition: {
+    openapi : '3.0.1',
+    info: {
+      title: 'Documentacion sistema AdoptMe',
+      description: 'Esta documentacion cubre toda la API habilitada para AdoptMe',
+    },
+  },
+  apis: [`${__dirname}/../docs/**/*.yaml`],
+};
+
+const specs = swaggerJSDoc (swaggerOptions);
+app.use ('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 // Handlebars
 app.engine("handlebars", handlebars.engine());

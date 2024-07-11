@@ -12,7 +12,7 @@ const userService = new UserManager();
 const initializePassport = () => {
   const localStrategy = local.Strategy;
   const JWTStrategy = jwt.Strategy;
-  const cartService = new CartManager();
+  const CartService = new CartManager();
 
   const admin = {
     first_name: "Coder",
@@ -31,6 +31,7 @@ const initializePassport = () => {
     if (req && req.cookies) {
       token = req.cookies.coderCookieToken ?? null;
     }
+
     return token;
   };
 
@@ -44,33 +45,38 @@ const initializePassport = () => {
       },
       async (req, username, password, done) => {
         const { first_name, last_name, email, age, role } = req.body;
-
+  
         try {
           let user = await userService.getUserByEmail(username);
           if (user) {
-            const errorMessage = "¡Registro fallido! El usuario ya existe en la base de datos\n Por favor, ingresa otro correo electrónico.";
+            const errorMessage = "¡Registro fallido! El usuario ya existe en la base de datos\n Por favor, ingresá otro correo electrónico.";
             return done(null, false, errorMessage);
           }
-
+  
           const newUser = {
             first_name,
             last_name,
             email,
             age,
-            cart: await cartService.createCart(),
+            cart: await CartService.createCart(),
             password: createHash(password),
             role: role || "user",
           };
+  
+          // Añadi esta línea para imprimir el nuevo usuario que se va a crear
+          console.log('Creando nuevo usuario:', newUser);
+  
           const result = await userService.createUser(newUser);
-
+  
           return done(null, result);
         } catch (error) {
+          console.error('Error en el registro del usuario:', error);  // Añadi esta línea para imprimir el error en la consola
           return done(error.message);
         }
       }
     )
   );
-
+  
   // Login
   passport.use(
     "login",
@@ -88,22 +94,22 @@ const initializePassport = () => {
           const user = await userService.getUserByEmail(username);
           if (!user) {
             const errorMessage = "¡Inicio de sesión fallido! El usuario no existe\n Por favor, verifica tu correo electrónico e intenta nuevamente.";
-            return done(null, false, errorMessage);
+            return done(null, false, { message: errorMessage });
           }
 
           if (!isValidPassword(user, password)) {
             const errorMessage = "¡Inicio de sesión fallido! La contraseña es incorrecta\n Por favor, verifica tu contraseña e intenta nuevamente.";
-            return done(null, false, errorMessage);
+            return done(null, false, { message: errorMessage });
           }
 
           if (!user.cart) {
-            user.cart = await cartService.createCart();
-            await userService.updateUser(user);
+            user.cart = await CartService.createCart();
+            await userService.updateUser(user._id, user);
           }
 
           return done(null, user);
         } catch (error) {
-          return done(error.message);
+          return done(null, false, { message: `Error al iniciar sesión: ${error.message}` });
         }
       }
     )
@@ -131,14 +137,14 @@ const initializePassport = () => {
               password: "",
               age: 0,
               role: "user",
-              cart: await cartService.createCart(),
+              cart: await CartService.createCart(),
             };
             let result = await userService.createUser(newUser);
             done(null, result);
           } else {
             if (!user.cart) {
-              user.cart = await cartService.createCart();
-              await userService.updateUser(user);
+              user.cart = await CartService.createCart();
+              await userService.updateUser(user._id, user);
             }
 
             done(null, user);
@@ -172,11 +178,11 @@ const initializePassport = () => {
           }
 
           if (!user.cart) {
-            user.cart = await cartService.createCart();
+            user.cart = await CartService.createCart();
             await userService.updateUser(user._id, user);
           }
 
-          return done(null, jwt_payload);
+          return done(null, user);
         } catch (error) {
           return done(error);
         }
@@ -196,8 +202,12 @@ const initializePassport = () => {
     if (id === "admin") {
       done(null, admin);
     } else {
-      let user = await userService.getUserById(id);
-      done(null, user);
+      try {
+        let user = await userService.getUserById(id);
+        done(null, user);
+      } catch (error) {
+        done(error);
+      }
     }
   });
 };

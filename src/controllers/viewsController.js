@@ -4,11 +4,6 @@ import userService from "../services/userService.js";
 import ticketService from "../services/ticketService.js";
 
 export const goHome = async (req, res) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
   req.logger.info("Redireccionar al home: Solicitud recibida.");
   try {
     res.status(200).redirect("/home");
@@ -19,12 +14,6 @@ export const goHome = async (req, res) => {
 };
 
 export const renderHome = async (req, res) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
-  req.logger.info("renderHome: Solicitud recibida.");
   try {
     const products = await productService.getPaginateProducts({}, { limit: 5, lean: true });
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
@@ -33,8 +22,6 @@ export const renderHome = async (req, res) => {
       style: "styles.css",
       products: products.docs,
       user: req.user,
-      userAdmin: req.isAdmin,
-      userPremium: req.isPremium,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
@@ -45,11 +32,6 @@ export const renderHome = async (req, res) => {
 };
 
 export const renderLogin = (req, res) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
   req.logger.info("renderLogin: Solicitud recibida.");
   res.render("login", {
     title: "Backend / Final - Login",
@@ -63,11 +45,6 @@ export const renderLogin = (req, res) => {
 };
 
 export const renderRegister = (req, res) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
   req.logger.info("renderRegister: Solicitud recibida.");
   res.render("register", {
     title: "Backend / Final - Registro",
@@ -79,11 +56,6 @@ export const renderRegister = (req, res) => {
 };
 
 export const getProducts = async (req, res) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
   req.logger.info("getProducts: Solicitud recibida.");
   try {
     const { page = 1, limit = 8, sort } = req.query;
@@ -118,7 +90,7 @@ export const getProducts = async (req, res) => {
     const products = await productService.getPaginateProducts(searchQuery, options);
     const paginationLinks = buildPaginationLinks(req, products);
     const categories = await productService.getDistinctCategories();
-    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+    const totalQuantityInCart = req.user ? calculateTotalQuantityInCart(req.user) : 0;
 
     let requestedPage = parseInt(page);
     if (isNaN(requestedPage) || requestedPage < 1) {
@@ -146,8 +118,6 @@ export const getProducts = async (req, res) => {
       ...paginationLinks,
       categories: categories,
       user: req.user,
-      userAdmin: req.isAdmin,
-      userPremium: req.isPremium,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     };
@@ -160,49 +130,28 @@ export const getProducts = async (req, res) => {
 };
 
 export const renderRealTimeProducts = async (req, res) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
-  req.logger.info("renderRealTimeProducts: Solicitud recibida.");
   const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
 
   res.render("realTimeProducts", {
     products: productService.getAllProducts,
     style: "styles.css",
     user: req.user,
-    userAdmin: req.isAdmin,
-    userPremium: req.isPremium,
     userAdminOrPremium: req.isAdminOrPremium,
     totalQuantityInCart,
   });
 };
 
 export const renderChat = async (req, res) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
-  req.logger.info("renderChat: Solicitud recibida.");
   const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
   res.render("chat", {
     style: "styles.css",
     user: req.user,
-    userAdmin: req.isAdmin,
-    userPremium: req.isPremium,
     userAdminOrPremium: req.isAdminOrPremium,
     totalQuantityInCart,
   });
 };
 
 export const renderCart = async (req, res) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
   req.logger.info("renderCart: Solicitud recibida.");
   try {
     const cart = await cartService.getCartById(req.params.cid);
@@ -223,8 +172,6 @@ export const renderCart = async (req, res) => {
       style: "styles.css",
       payload: products,
       user: req.user,
-      userAdmin: req.isAdmin,
-      userPremium: req.isPremium,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
@@ -235,11 +182,6 @@ export const renderCart = async (req, res) => {
 };
 
 export const renderProductDetails = async (req, res) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
   req.logger.info("renderProductDetails: Solicitud recibida.");
   try {
     const { pid } = req.params;
@@ -254,8 +196,6 @@ export const renderProductDetails = async (req, res) => {
       style: "styles.css",
       product: product,
       user: req.user,
-      userAdmin: req.isAdmin,
-      userPremium: req.isPremium,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
@@ -266,11 +206,6 @@ export const renderProductDetails = async (req, res) => {
 };
 
 export const redirectIfLoggedIn = (req, res, next) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
   req.logger.info("redirectIfLoggedIn: Solicitud recibida.");
   if (req.user) {
     req.logger.info("redirectIfLoggedIn: El usuario está conectado, redirigiendo a /home.");
@@ -280,11 +215,6 @@ export const redirectIfLoggedIn = (req, res, next) => {
 };
 
 export const logOut = async (req, res) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
   req.logger.info("logOut: Solicitud recibida.");
   try {
     res.clearCookie("coderCookieToken");
@@ -297,11 +227,6 @@ export const logOut = async (req, res) => {
 };
 
 export const isAdminOrPremium = (req, res, next) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
   req.logger.info("isAdminOrPremium: Verificando si el usuario es administrador o premium.");
   if (req.user) {
     req.isAdmin = req.user.role === "admin";
@@ -316,12 +241,6 @@ export const isAdminOrPremium = (req, res, next) => {
 };
 
 export const populateCart = async (req, res, next) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
-  req.logger.info("populateCart: Solicitud recibida.");
   try {
     const user = req.user;
     if (user && user.role !== "admin" && user.cart) {
@@ -361,11 +280,6 @@ export const buildPaginationLinks = (req, products) => {
 };
 
 export const verifyUserSession = (req, res, next) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
   req.logger.info("verifyUserSession: Solicitud recibida.");
   if (!req.user) {
     res.clearCookie("connect.sid");
@@ -375,11 +289,6 @@ export const verifyUserSession = (req, res, next) => {
 };
 
 export const purchaseView = async (req, res) => {
-  if (!req.logger) {
-    console.error("Logger is not defined");
-    res.status(500).send({ error: "Logger is not defined" });
-    return;
-  }
   req.logger.info("purchaseView: Solicitud recibida.");
   try {
     const cart = await cartService.getCartById(req.params.cid);
@@ -446,8 +355,6 @@ export const purchaseView = async (req, res) => {
         processedAmount,
         notProcessedAmount,
         user: req.user,
-        userAdmin: req.isAdmin,
-        userPremium: req.isPremium,
         userAdminOrPremium: req.isAdminOrPremium,
         totalQuantityInCart: calculateTotalQuantityInCart(req.user),
       });
@@ -461,8 +368,6 @@ export const purchaseView = async (req, res) => {
       notProcessedAmount,
       notProcessed,
       user: req.user,
-      userAdmin: req.isAdmin,
-      userPremium: req.isPremium,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart: calculateTotalQuantityInCart(req.user),
     });
