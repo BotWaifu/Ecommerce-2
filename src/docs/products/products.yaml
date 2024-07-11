@@ -299,17 +299,18 @@ components:
           type: integer
           description: Versión del documento en MongoDB
       example:
-        _id: "660725f2d49ab55bf9c00da3"
-        title: "Campera chopera"
-        description: "Es una prenda de estilo robusto y urbano que evoca una sensación de aventura y exploración. Inspirada en la moda motociclista, esta campera se caracteriza por su diseño resistente y su aspecto desgastado."
-        category: "camperas"
-        price: 35000
-        code: "JJJ123"
-        stock: 0
-        thumbnails: ["chopera.webp"]
-        status: true
-        owner: "admin"
-        __v: 0
+    
+              _id: "660725f2d49ab55bf9c00da3"
+              title: "Figura denji"
+              description: "Figura del anime chaninsawman"
+              category: "Figuras"
+              price: 70
+              code: "C002"
+              stock: 0
+              thumbnails: ["denji.jpg"]
+              status: true
+              owner: "admin"
+              __v: 0
     updateProduct:
       type: object
       properties:
@@ -343,10 +344,10 @@ components:
           type: string
           description: Propietario del producto
       example:
-        title: "Pantalon Jeans"
-        description: "Los jeans son un clásico atemporal en el mundo de la moda, conocidos por su durabilidad y versatilidad. Este icónico pantalón ofrece un estilo casual y elegante que se adapta a una amplia gama de ocasiones, desde un día relajado en casa hasta una salida informal con amigos."
-        price: 30000
-        thumbnails: ["jeans.webp"]
-        code: "BBB123"
-        stock: 20
-        category: "pantalones"
+        title: "Peluche del anime-Kimetsu no Yaiba"
+        description: "Peluche del anime-Kimetsu no Yaiba."
+        price: 15
+        thumbnails: ["peluche-anime.jpg"]
+        code: "C001"
+        stock: 10
+        category: "peluche anime"

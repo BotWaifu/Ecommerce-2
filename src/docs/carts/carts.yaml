@@ -296,13 +296,13 @@ components:
         products:
           - _id:
               _id: "660725f2d49ab55bf9c00da3"
-              title: "Campera chopera"
-              description: "Es una prenda de estilo robusto y urbano que evoca una sensación de aventura y exploración. Inspirada en la moda motociclista, esta campera se caracteriza por su diseño resistente y su aspecto desgastado."
-              category: "camperas"
-              price: 35000
-              code: "JJJ123"
+              title: "Figura denji"
+              description: "Figura del anime chaninsawman"
+              category: "Figuras"
+              price: 70
+              code: "C002"
               stock: 0
-              thumbnails: ["chopera.webp"]
+              thumbnails: ["denji.jpg"]
               status: true
               owner: "admin"
               __v: 0
@@ -346,11 +346,11 @@ components:
         code: "ORDER34534534"
         purchaseDateTime: "2024-06-10T02:54:10.103+00:00"
         amount: 31000
-        purchaser: "jfrei@gmail.com"
+        purchaser: "maria16leon17@gmail.com"
         products:
           - _id: "660725f2d49ab55bf9c00da3"
             quantity: 2
-            name: "Campera chopera"
+            name: "Figura anime-denji"
 
     TicketProducts:
       type: object
