@@ -31,11 +31,9 @@ class UserRepository {
     try {
       return await userModel.create(user);
     } catch (error) {
-      console.error('Error al registrar usuario:', error);  // Añade esta línea para imprimir el error en la consola
-      throw new Error(`Error al registrar usuario: ${error.message}`);
+      throw new Error("Error al registrar usuario");
     }
   }
-  
 
   async updateUser(uid, user) {
     try {
@@ -50,6 +48,14 @@ class UserRepository {
       return await userModel.updateOne({ email: userEmail }, user);
     } catch (error) {
       throw new Error("Error al actualizar el usuario en la base de datos");
+    }
+  }
+
+  async deleteUserByEmail(userEmail) {
+    try {
+      return await userModel.deleteOne({ email: userEmail });
+    } catch (error) {
+      throw new Error("Error al eliminar usuario");
     }
   }
 }

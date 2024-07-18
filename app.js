@@ -20,17 +20,20 @@ import cookieParser from 'cookie-parser';
 import config from './src/config/config.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
-
+import { addLogger } from './src/utils/logger.js'; // Importa el middleware de logging
 
 const app = express();
 const port = config.PORT;
-const uri = config.MONGO_URL;
+const uri = config.NODE_ENV === "test" ? config.MONGO_TEST_URL : config.MONGO_URL;
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
+
+// Agrega el middleware addLogger antes de las rutas
+app.use(addLogger);
 
 app.use(
   session({
@@ -61,7 +64,7 @@ app.use("/api/users", usersRouter);
 
 const swaggerOptions = {
   definition: {
-    openapi : '3.0.1',
+    openapi: '3.0.1',
     info: {
       title: 'Documentacion sistema AdoptMe',
       description: 'Esta documentacion cubre toda la API habilitada para AdoptMe',
@@ -70,8 +73,8 @@ const swaggerOptions = {
   apis: [`${__dirname}/../docs/**/*.yaml`],
 };
 
-const specs = swaggerJSDoc (swaggerOptions);
-app.use ('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
+const specs = swaggerJSDoc(swaggerOptions);
+app.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 // Handlebars
 app.engine("handlebars", handlebars.engine());

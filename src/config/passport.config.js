@@ -6,11 +6,10 @@ import { createHash, isValidPassword } from "../utils/functionsUtils.js";
 import CartManager from "../dao/MongoDB/CartManagerDB.js";
 import config from "./config.js";
 import UserManager from "../dao/MongoDB/UserManagerDB.js";
-
 const userService = new UserManager();
 
-const initializePassport = () => {
-  const localStrategy = local.Strategy;
+const initializePassport = async () => {
+  const localStratergy = local.Strategy;
   const JWTStrategy = jwt.Strategy;
   const CartService = new CartManager();
 
@@ -27,32 +26,32 @@ const initializePassport = () => {
   const githubCallbackURL = config.GITHUB_CALLBACK_URL;
 
   const cookieExtractor = (req) => {
-    let token = null;
+    let token;
     if (req && req.cookies) {
-      token = req.cookies.coderCookieToken ?? null;
+      token = req.cookies["coderCookieToken"];
     }
 
     return token;
   };
 
-  // Registro
+  //Registro
   passport.use(
     "register",
-    new localStrategy(
+    new localStratergy(
       {
         passReqToCallback: true,
         usernameField: "email",
       },
       async (req, username, password, done) => {
         const { first_name, last_name, email, age, role } = req.body;
-  
+
         try {
           let user = await userService.getUserByEmail(username);
           if (user) {
             const errorMessage = "¡Registro fallido! El usuario ya existe en la base de datos\n Por favor, ingresá otro correo electrónico.";
             return done(null, false, errorMessage);
           }
-  
+
           const newUser = {
             first_name,
             last_name,
@@ -62,25 +61,20 @@ const initializePassport = () => {
             password: createHash(password),
             role: role || "user",
           };
-  
-          // Añadi esta línea para imprimir el nuevo usuario que se va a crear
-          console.log('Creando nuevo usuario:', newUser);
-  
           const result = await userService.createUser(newUser);
-  
+
           return done(null, result);
         } catch (error) {
-          console.error('Error en el registro del usuario:', error);  // Añadi esta línea para imprimir el error en la consola
           return done(error.message);
         }
       }
     )
   );
-  
-  // Login
+
+  //Login
   passport.use(
     "login",
-    new localStrategy(
+    new localStratergy(
       {
         usernameField: "email",
       },
@@ -94,28 +88,28 @@ const initializePassport = () => {
           const user = await userService.getUserByEmail(username);
           if (!user) {
             const errorMessage = "¡Inicio de sesión fallido! El usuario no existe\n Por favor, verifica tu correo electrónico e intenta nuevamente.";
-            return done(null, false, { message: errorMessage });
+            return done(null, false, errorMessage);
           }
 
           if (!isValidPassword(user, password)) {
             const errorMessage = "¡Inicio de sesión fallido! La contraseña es incorrecta\n Por favor, verifica tu contraseña e intenta nuevamente.";
-            return done(null, false, { message: errorMessage });
+            return done(null, false, errorMessage);
           }
 
           if (!user.cart) {
             user.cart = await CartService.createCart();
-            await userService.updateUser(user._id, user);
+            await userService.updateUser(user);
           }
 
           return done(null, user);
         } catch (error) {
-          return done(null, false, { message: `Error al iniciar sesión: ${error.message}` });
+          return done(error.message);
         }
       }
     )
   );
 
-  // GitHub
+  //Github
   passport.use(
     "github",
     new GitHubStrategy(
@@ -144,7 +138,7 @@ const initializePassport = () => {
           } else {
             if (!user.cart) {
               user.cart = await CartService.createCart();
-              await userService.updateUser(user._id, user);
+              await userService.updateUser(user);
             }
 
             done(null, user);
@@ -156,7 +150,7 @@ const initializePassport = () => {
     )
   );
 
-  // Login con JWT
+  //Login con JWT
   passport.use(
     "jwt",
     new JWTStrategy(
@@ -171,7 +165,7 @@ const initializePassport = () => {
             return done(null, adminUser);
           }
 
-          // En caso de que no se encuentre un carrito creado en el usuario registrado
+          //en caso de que no se encuentre un carrito creado en el usuario registrado
           let user = await userService.getUserById(jwt_payload._id);
           if (!user) {
             return done(null, false);
@@ -182,7 +176,7 @@ const initializePassport = () => {
             await userService.updateUser(user._id, user);
           }
 
-          return done(null, user);
+          return done(null, jwt_payload);
         } catch (error) {
           return done(error);
         }
@@ -202,12 +196,8 @@ const initializePassport = () => {
     if (id === "admin") {
       done(null, admin);
     } else {
-      try {
-        let user = await userService.getUserById(id);
-        done(null, user);
-      } catch (error) {
-        done(error);
-      }
+      let user = await userService.getUserById(id);
+      done(null, user);
     }
   });
 };

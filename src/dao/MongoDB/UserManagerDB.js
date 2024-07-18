@@ -6,51 +6,31 @@ class UserManager {
   }
 
   async getAllUsers(filter) {
-    try {
-      return await this.userRepository.getAllUsers(filter);
-    } catch (error) {
-      throw new Error(`Error al obtener todos los usuarios: ${error.message}`);
-    }
+    return await this.userRepository.getAllUsers(filter);
   }
 
   async getUserById(id) {
-    try {
-      return await this.userRepository.getUserById(id);
-    } catch (error) {
-      throw new Error(`Error al obtener usuario por ID: ${error.message}`);
-    }
+    return await this.userRepository.getUserById(id);
   }
 
   async getUserByEmail(email) {
-    try {
-      return await this.userRepository.getUserByEmail(email);
-    } catch (error) {
-      throw new Error(`Error al obtener usuario por email: ${error.message}`);
-    }
+    return await this.userRepository.getUserByEmail(email);
   }
 
   async createUser(user) {
-    try {
-      return await this.userRepository.createUser(user);
-    } catch (error) {
-      throw new Error(`Error al registrar usuario: ${error.message}`);
-    }
+    return await this.userRepository.createUser(user);
   }
 
   async updateUser(uid, user) {
-    try {
-      return await this.userRepository.updateUser(uid, user);
-    } catch (error) {
-      throw new Error(`Error al actualizar el usuario: ${error.message}`);
-    }
+    return await this.userRepository.updateUser(uid, user);
   }
 
   async updateUserByEmail(userEmail, user) {
-    try {
-      return await this.userRepository.updateUserByEmail(userEmail, user);
-    } catch (error) {
-      throw new Error(`Error al actualizar el usuario por email: ${error.message}`);
-    }
+    return await this.userRepository.updateUserByEmail(userEmail, user);
+  }
+
+  async deleteUserByEmail(userEmail) {
+    return await this.userRepository.deleteUserByEmail(userEmail);
   }
 }
 

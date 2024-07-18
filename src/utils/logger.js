@@ -25,7 +25,10 @@ const devLogger = winston.createLogger({
   transports: [
     new winston.transports.Console({
       level: "debug",
-      format: winston.format.combine(winston.format.colorize({ colors: customLevelsOptions.colors }), winston.format.simple()),
+      format: winston.format.combine(
+        winston.format.colorize({ colors: customLevelsOptions.colors }),
+        winston.format.simple()
+      ),
     }),
   ],
 });
@@ -35,7 +38,10 @@ const prodLogger = winston.createLogger({
   transports: [
     new winston.transports.Console({
       level: "info",
-      format: winston.format.combine(winston.format.colorize({ colors: customLevelsOptions.colors }), winston.format.simple()),
+      format: winston.format.combine(
+        winston.format.colorize({ colors: customLevelsOptions.colors }),
+        winston.format.simple()
+      ),
     }),
     new winston.transports.File({
       filename: "./src/logs/errors.log",
@@ -48,10 +54,12 @@ const prodLogger = winston.createLogger({
 const environment = config.NODE_ENV || "DEVELOPMENT";
 
 export const addLogger = (req, res, next) => {
-  if (environment == "DEVELOPMENT") {
+  console.log(`Adding logger middleware. Environment: ${environment}`);
+  if (environment === "DEVELOPMENT") {
     req.logger = devLogger;
-  } else if (environment == "PRODUCTION") {
+  } else if (environment === "PRODUCTION") {
     req.logger = prodLogger;
   }
+  console.log("Logger middleware is being applied");
   next();
 };

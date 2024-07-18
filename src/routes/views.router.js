@@ -22,7 +22,11 @@ import { addLogger } from "../utils/logger.js";
 
 const router = Router();
 
-router.use(addLogger);
+router.use((req, res, next) => {
+  console.log("Logger middleware is being applied");
+  addLogger(req, res, next);
+});
+
 router.get("/", passportCallHome("jwt"), goHome);
 router.get("/home", passportCallHome("jwt"), isAdminOrPremium, populateCart, renderHome);
 router.get("/login", passportCallHome("jwt"), redirectIfLoggedIn, renderLogin);
