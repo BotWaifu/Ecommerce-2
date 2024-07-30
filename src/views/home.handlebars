@@ -3,39 +3,32 @@
     <h1>Bienvenido</h1>
   </div>
 
-  {{#if user}}
-    <section class="hero">
-      <div style="padding: 50px 0;">
-        <h2 class="text-center display-1 mobile">AnimeStore</h2>
-        <p class="text-center" style="margin: 0 0 4rem 0 !important;">Explora nuestra colección y encuentra lo último en anime.</p>
-        <a href="/products" class="btn btn-effect btn-dark btn-jif bg-black zoomy">Ver colección</a>
-      </div>
-    </section>
-
-    <section class="featured-products">
-      <h2 class="text-center">Productos Destacados</h2>
-      {{#if products}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {{#each products}}
-            <div class="product">
-              <img src="{{this.thumbnail}}" alt="{{this.title}}" />
-              <h3>{{this.title}}</h3>
-              <p>${{this.price}}</p>
-              <a style="padding: 1% 20%" href="/products/item/{{this._id}}" class="btn button-black mt-2">Comprar</a>
-            </div>
-          {{/each}}
-        </div>
-      {{else}}
-        <h1 class="text-center mt-12 text-lg">No hay productos</h1>
-      {{/if}}
-    </section>
-  {{else}}
-    <div class="text-center">
-      <h2>Por favor <a href="/login">inicia sesión</a> para ver el contenido.</h2>
+  <section class="hero">
+    <div style="padding: 50px 0;">
+      <h2 class="text-center display-1 mobile">Descubre el estilo urbano que te define</h2>
+      <p class="text-center" style="margin: 0 0 4rem 0 !important;">Explora nuestra colección y encuentra lo último en moda urbana.</p>
+      <a href="/products" class="btn btn-effect btn-dark btn-jif bg-black zoomy">Ver colección</a>
     </div>
-  {{/if}}
+  </section>
+
+  <section class="featured-products">
+    <h2 class="text-center">Productos Destacados</h2>
+    {{#if products}}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {{#each products}}
+          <div class="product">
+            <img src="img/products/{{thumbnails}}" alt="Comprar {{title}}" />
+            <h3>{{title}}</h3>
+            <p>${{price}}</p>
+            <a style="padding: 1% 20%" href="/products/item/{{_id}}" class="btn button-black mt-2">Comprar</a>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <h1 class="text-center mt-12 text-lg">No hay productos</h1>
+    {{/if}}
+  </section>
 </div>
 
 <!-- Scripts necesarios -->
 <script src="https://kit.fontawesome.com/4e9044019f.js" crossorigin="anonymous"></script>
-

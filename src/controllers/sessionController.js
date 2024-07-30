@@ -9,65 +9,36 @@ import config from "../config/config.js";
 
 const resetPasswordService = new ResetPasswordService();
 
-export const loginJWT = (req, res) => {
-  req.logger.info(`Intento de inicio de sesión para el usuario: ${req.user.email}`);
-  const token = sessionService.generateJWT(req.user);
-  sessionService.setTokenCookie(res, token);
-
-  if (req.user) {
-    req.logger.info(`Usuario ${req.user.email} se ha logueado con JWT exitosamente.`);
-    return res.redirect("/home");
-  } else {
-    req.logger.warn("Intento de logueo con JWT fallido, usuario no encontrado.");
-    res.status(401).json({ error: "Usuario no encontrado" });
-  }
-};
-
-export const gitHubCallBackJWT = (req, res) => {
+export const gitHubCallBackJWT = async (req, res) => {
   req.logger.info(`Callback de GitHub para el usuario: ${req.user.email}`);
+  req.user.last_connection = Date.now();
+  await userService.updateUserByEmail(req.user.email, req.user);
   const token = sessionService.generateJWT(req.user);
   sessionService.setTokenCookie(res, token);
-  req.session.user = req.user;
   req.logger.info(`Usuario ${req.user.email} ha iniciado sesión exitosamente a través de GitHub.`);
   res.redirect("/home");
 };
 
-export const handleRegister = (req, res) => {
-  req.logger.info(`Nuevo registro de usuario: ${req.body.email}`);
-  res.send({
-    status: "success",
-    message: "Usuario registrado",
-  });
-};
-
-export const handleLogin = (req, res, next) => {
-  req.session.user = {
-    first_name: req.user.first_name,
-    last_name: req.user.last_name,
-    email: req.user.email,
-    age: req.user.age,
-    role: req.user.role,
-  };
-  next();
-};
-
-export const getCurrentUser = (req, res) => {
-  req.logger.info(`Solicitud para obtener el usuario actual: ${req.user.email}`);
-  const user = new userDTO(req.user);
-  res.send({ status: "success", payload: user });
+export const failRegister = async (req, res) => {
+  req.logger.error("Failed Strategy");
+  res.status(400).json({ error: "Failed" });
 };
 
 export const logOutSession = (req, res) => {
   req.logger.info(`Cierre de sesión solicitado por el usuario: ${req.user.email}`);
-  req.session.destroy((err) => {
-    if (err) {
-      req.logger.error(`Error al destruir la sesión para el usuario ${req.user.email}: ${err.message}`);
-      res.status(500).json({ error: "Error interno del servidor" });
-    } else {
-      req.logger.info(`Sesión destruida exitosamente para el usuario ${req.user.email}`);
-      res.redirect("/login");
-    }
-  });
+};
+
+export const logOutJwt = async (req, res) => {
+  try {
+    req.user.last_connection = Date.now();
+    await userService.updateUserByEmail(req.user.email, req.user);
+    res.clearCookie("coderCookieToken");
+    req.logger.info("Session controller - JWT logout exitoso");
+    res.redirect("/");
+  } catch (error) {
+    req.logger.error("Session controller - Error al cerrar la sesión JWT:", error);
+    return res.status(500).json({ status: "error", error: "Internal Server Error" });
+  }
 };
 
 export const resetPassword = async (req, res, next) => {
@@ -101,7 +72,7 @@ export const resetPassword = async (req, res, next) => {
 
     try {
       let result = await transport.sendMail({
-        from: "JIF Style Store - Recuperación de contraseña <" + config.EMAIL_USER + ">",
+        from: "AnimeStore - Recuperación de contraseña <" + config.EMAIL_USER + ">",
         to: email,
         subject: "Código de recuperación de tu contraseña",
         html: `
@@ -138,7 +109,6 @@ export const newPassword = async (req, res) => {
     const passwordHash = createHash(password);
     const updates = { password: passwordHash };
     const updatedUser = await userService.updateUserByEmail(resetCode.email, updates);
-    console.log(updatedUser);
     if (!updatedUser) {
       req.logger.error("Error al actualizar la contraseña del usuario");
       return res.status(500).json({ status: "error", message: "Error al actualizar la contraseña del usuario" });

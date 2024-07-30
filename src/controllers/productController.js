@@ -2,7 +2,7 @@ import CustomError from "../services/errors/CustomError.js";
 import { generateProductsErrorInfo, generateNotFoundErrorInfo, generateDefaultErrorInfo } from "../services/errors/info.js";
 import { ErrorCodes } from "../services/errors/enums.js";
 import productService from "../services/productService.js";
-import ProductDTO from "../dto/ProductDTO.js";
+import ProductDTO from "../dto/productDTO.js";
 import userService from "../services/userService.js";
 
 export const getPaginateProducts = async (req, res) => {
@@ -120,7 +120,6 @@ export const updateProduct = async (req, res) => {
     if (!product) {
       req.logger.warning(`Producto con ID: ${productID} no encontrado para actualizar.`);
       return res.status(404).json({ code: "NOT_FOUND_ERROR", message: `Producto con ID ${productID} no encontrado` });
-      // throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", productID).message);
     }
     if (req.user.role == "admin") {
       await productService.updateProduct(productID, req.body);

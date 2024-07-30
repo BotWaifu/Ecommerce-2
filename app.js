@@ -1,29 +1,27 @@
-import express from 'express';
-import session from 'express-session';
-import mongoStore from 'connect-mongo';
-import productsRouter from './src/routes/products.router.js';
-import cartsRouter from './src/routes/carts.router.js';
-import sessionsRouter from './src/routes/sessions.router.js';
-import viewsRouter from './src/routes/views.router.js';
-import loggerRouter from './src/routes/logger.router.js';
+import express from "express";
+import mongoose from "mongoose";
+import passport from "passport";
+import initializePassport from "./src/config/passport.config.js";
+import config from "./src/config/config.js";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express";
+import handlebars from "express-handlebars";
+import __dirname from "./src/utils/constantsUtil.js";
+import { Server } from "socket.io";
+import Sockets from "./sockets.js";
+import productsRouter from "./src/routes/products.router.js";
+import cartsRouter from "./src/routes/carts.router.js";
+import sessionsRouter from "./src/routes/sessions.router.js";
+import viewsRouter from "./src/routes/views.router.js";
+import mockingRouter from "./src/routes/mocking.router.js";
+import loggerRouter from "./src/routes/logger.router.js";
 import mailRouter from "./src/routes/mail.router.js";
 import usersRouter from "./src/routes/users.router.js";
-import mockingRouter from './src/routes/mocking.router.js';
-import handlebars from 'express-handlebars';
-import __dirname from './src/utils/constantsUtil.js';
-import { Server } from 'socket.io';
-import Sockets from './sockets.js';
-import mongoose from 'mongoose';
-import passport from 'passport';
-import initializePassport from './src/config/passport.config.js';
-import cookieParser from 'cookie-parser';
-import config from './src/config/config.js';
-import swaggerJSDoc from 'swagger-jsdoc';
-import swaggerUiExpress from 'swagger-ui-express';
+import cookieParser from "cookie-parser";
+import { addLogger } from "./src/utils/logger.js";
 
 const app = express();
 const port = config.PORT;
-// const uri = config.MONGO_URL;
 const uri = config.NODE_ENV === "test" ? config.MONGO_TEST_URL : config.MONGO_URL;
 
 const swaggerOptions = {
@@ -37,30 +35,18 @@ const swaggerOptions = {
   apis: [`${__dirname}/../docs/**/*.yaml`],
 };
 
-const specs = swaggerJSDoc(swaggerOptions);
+const specs = swaggerJsdoc(swaggerOptions);
 app.use("/api/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
-
-app.use(
-  session({
-    store: mongoStore.create({
-      mongoUrl: uri,
-      ttl: 60, // 60 minutos
-    }),
-    secret: config.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+app.use(express.static(`${__dirname}/../../public`));
 
 initializePassport();
 app.use(passport.initialize());
-app.use(passport.session());
 app.use(cookieParser());
+app.use(addLogger);
 
 // Routes
 app.use("/", viewsRouter);

@@ -15,23 +15,29 @@ form.addEventListener("submit", (e) => {
   })
     .then((result) => {
       if (!result.ok) {
-        throw new Error("Error en el registro");
+        return result.json().then((json) => {
+          throw new Error(json.message);
+        });
       }
       return result.json();
     })
     .then((json) => {
-      Swal.fire({
-        icon: "success",
-        title: "¡Registrado exitosamente!",
-        text: "Te has registrado exitosamente!",
-      });
-      form.reset();
+      if (json.status === "success") {
+        Swal.fire({
+          icon: "success",
+          title: "¡Registrado exitosamente!",
+          text: "Te has registrado exitosamente!",
+        });
+        form.reset();
+      } else {
+        throw new Error(json.message);
+      }
     })
     .catch((error) => {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Hubo un error en el registro!",
+        text: error.message,
       });
       console.error("Error:", error);
     });
