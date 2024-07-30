@@ -28,7 +28,7 @@ const swaggerOptions = {
   definition: {
     openapi: "3.0.1",
     info: {
-      title: "Documentacion JIF Style Ecommerce",
+      title: "Documentacion Animestore",
       description: "API pensada para aplicacion de un Marketplace",
     },
   },
