@@ -78,8 +78,9 @@ function uploadFile(type, inputId, docType) {
         },
       }).showToast();
       socket.emit("documentUploadSuccess", { userId: userId, documentType: docType });
-      updateProfilePic();
-
+      if (docType === "avatar") {
+        updateProfilePic();
+      }
       const fileInput = document.getElementById(inputId);
       if (fileInput) fileInput.value = "";
       if (inputId === "profilePictureInput") {
@@ -167,9 +168,11 @@ async function updateUserRole() {
 function updateProfilePic() {
   const profilePic = document.getElementById("profilePic");
   const profilePic2 = document.getElementById("currentProfilePic");
-  if (profilePic) {
-    profilePic.src = profilePic.src.split("?")[0] + "?" + new Date().getTime();
-    profilePic2.src = profilePic2.src.split("?")[0] + "?" + new Date().getTime();
+  const userIdElement = document.getElementById("ID");
+  const userId = userIdElement ? userIdElement.textContent.trim() : null;
+  if (profilePic && userId) {
+    profilePic.src = `/img/profiles/${userId}/ProfilePic?${new Date().getTime()}`;
+    profilePic2.src = `/img/profiles/${userId}/ProfilePic?${new Date().getTime()}`;
   }
 }
 

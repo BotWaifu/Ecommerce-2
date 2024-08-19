@@ -1,3 +1,4 @@
+
 import nodemailer from "nodemailer";
 import config from "../config/config.js";
 
@@ -12,12 +13,12 @@ const transport = nodemailer.createTransport({
 
 export const mailController = async (req, res) => {
   let result = await transport.sendMail({
-    from: "coder test <config.EMAIL_USER>",
+    from: `animestore: <${config.EMAIL_USER}>`,
     to: req.user.email,
     subject: "Correo de prueba",
     html: `
         <div>
-            <h1>Este es un testeo del mailer</h1>
+            <h1>Este es un testeo del servicio de email de animestore</h1>
         </div>
         `,
     attachments: [],

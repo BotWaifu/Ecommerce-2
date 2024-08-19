@@ -25,6 +25,8 @@ if (cartSummary) {
 }
 
 if (vaciarCarritoBtn) {
+  const cartId = vaciarCarritoBtn.getAttribute("data-cart-id");
+
   vaciarCarritoBtn.addEventListener("click", async function (event) {
     event.preventDefault();
 
@@ -42,7 +44,7 @@ if (vaciarCarritoBtn) {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch("/api/carts/{{ user.cart._id }}", {
+          const response = await fetch(`/api/carts/${cartId}`, {
             method: "DELETE",
             headers: {
               "Content-Type": "application/json",
@@ -52,7 +54,6 @@ if (vaciarCarritoBtn) {
           if (response.ok) {
             window.location.reload();
           } else {
-            console.error("Error al vaciar el carrito:", response.statusText);
             Swal.fire({
               icon: "error",
               title: "¡Error!",
@@ -62,7 +63,6 @@ if (vaciarCarritoBtn) {
             });
           }
         } catch (error) {
-          console.error("Error al vaciar el carrito:", error);
           Swal.fire({
             icon: "error",
             title: "¡Error!",
