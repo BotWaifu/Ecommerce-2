@@ -1,0 +1,83 @@
+[
+    {
+      "_id": "66b796144ff5da7321c303e9",
+      "code": 744,
+      "purchaseDateTime": "2024-08-10T16:32:20.493Z",
+      "amount": 150,
+      "purchaser": "maria16leon17@gmail.com",
+      "products": [
+        {
+          "_id": "1",
+          "quantity": 1,
+          "name": "Peluche Anime - Iguro"
+        },
+        {
+          "_id": "2",
+          "quantity": 1,
+          "name": "Figura Anime - Denji"
+        }
+      ]
+    },
+    {
+      "_id": "66b79717411b8e86abcf83a3",
+      "code": 23,
+      "purchaseDateTime": "2024-08-10T16:36:39.330Z",
+      "amount": 80,
+      "purchaser": "maria16leon17@gmail.com",
+      "products": [
+        {
+          "_id": "3",
+          "quantity": 2,
+          "name": "Toalla Anime - Nico Robin"
+        }
+      ]
+    },
+    {
+      "_id": "66b7982b63ada5e5364b7c92",
+      "code": 712,
+      "purchaseDateTime": "2024-08-10T16:41:15.022Z",
+      "amount": 120,
+      "purchaser": "maria16leon17@gmail.com",
+      "products": [
+        {
+          "_id": "4",
+          "quantity": 1,
+          "name": "Frazada Anime - Eve"
+        },
+        {
+          "_id": "5",
+          "quantity": 1,
+          "name": "Cuadro Ilustracion Metalica - One Piece"
+        }
+      ]
+    },
+    {
+      "_id": "66b799425617cde2673db440",
+      "code": 414,
+      "purchaseDateTime": "2024-08-10T16:45:54.201Z",
+      "amount": 60,
+      "purchaser": "maria16leon17@gmail.com",
+      "products": [
+        {
+          "_id": "6",
+          "quantity": 2,
+          "name": "Mouse Pad Anime - Sakura Taisen"
+        }
+      ]
+    },
+    {
+      "_id": "66b79b3edc1570d518bbedae",
+      "code": 715,
+      "purchaseDateTime": "2024-08-10T16:54:22.948Z",
+      "amount": 20,
+      "purchaser": "maria16leon17@gmail.com",
+      "products": [
+        {
+          "_id": "7",
+          "quantity": 1,
+          "name": "Folder Animes Variados"
+        }
+      ]
+    }
+  ]
+  

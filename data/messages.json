@@ -1,0 +1,56 @@
+[
+    {
+      "_id": "660e196aa6a2b52cb8c37fee",
+      "user": "maria16leon17@gmail.com",
+      "message": "¡Hola! Estaba buscando algunas figuras de anime para agregar a mi colección. ¿Qué tienes disponible?",
+      "__v": 0
+    },
+    {
+      "_id": "660e196ea6a2b52cb8c37ff0",
+      "user": "adminCoder@coder.com",
+      "message": "¡Hola! Bienvenido/a a nuestra tienda. Tenemos una amplia selección de figuras y otros artículos de anime. ¿Hay algo en particular que estés buscando?",
+      "__v": 0
+    },
+    {
+      "_id": "6610516e6392e6d2066f25c1",
+      "user": "maria16leon17@gmail.com",
+      "message": "Me gustaría algo de Dragon Ball Z. ¿Tienen alguna recomendación?",
+      "__v": 0
+    },
+    {
+      "_id": "661051ae6392e6d2066f25c3",
+      "user": "adminCoder@coder.com",
+      "message": "Por supuesto. Te recomendaría echar un vistazo a nuestras figuras de Vegeta y Goku. Son perfectas para cualquier fanático de Dragon Ball Z. ¿Te gustaría ver algunos modelos?",
+      "__v": 0
+    },
+    {
+      "_id": "6610cf0d2155ef5d338daa30",
+      "user": "julio@gmail.com",
+      "message": "Hola! buen día, tienen algun catálogo disponible?",
+      "__v": 0
+    },
+    {
+      "_id": "66301c4c49b671f18a19706f",
+      "user": "maria16leon17@gmail.com",
+      "message": "Probando el sistema de mensajes.",
+      "__v": 0
+    },
+    {
+      "_id": "66a461d0dd9a08f317d69712",
+      "user": "maria16leon17@gmail.com",
+      "message": "Verificando nuevamente el envío de mensajes.",
+      "__v": 0
+    },
+    {
+      "_id": "66b179c2b402270c5a3816db",
+      "user": "cliente.nuevo@gmail.com",
+      "message": "¿Podrían ayudarme con una consulta sobre envíos?",
+      "__v": 0
+    },
+    {
+      "user": "adminCoder@coder.com",
+      "message": "sdf",
+      "_id": "66b7767cdc30127521ab45be"
+    }
+  ]
+  
