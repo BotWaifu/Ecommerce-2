@@ -1,138 +1,227 @@
 [
   {
-    "id": 1,
+    "_id": "660725f2d49ab55bf9c00d9b",
     "title": "Peluche Anime",
     "description": "Peluche de Iguro - Kimetsu no yaiba",
+    "category": "peluches",
     "price": 15,
-    "thumbnail": "img/pelucheiguro.jpg",
     "code": "C001",
     "stock": 10,
-    "status": true
+    "thumbnails": [
+      "img/pelucheiguro.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 2,
+    "_id": "660725f2d49ab55bf9c00d9a",
     "title": "Figura Anime",
     "description": "Figura Denji SEGA - Chainsaw Man",
+    "category": "figuras",
     "price": 70,
-    "thumbnail": "img/figuradenji.jpg",
     "code": "C002",
-    "stock": 5
+    "stock": 5,
+    "thumbnails": [
+      "img/figuradenji.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 3,
+    "_id": "660725f2d49ab55bf9c00d9f",
     "title": "Toalla Anime",
     "description": "Toalla Anime - Nico Robin One Piece",
+    "category": "accesorios",
     "price": 10,
-    "thumbnail": "img/toalla-nicorobin.jpg",
     "code": "C003",
-    "stock": 1
+    "stock": 1,
+    "thumbnails": [
+      "img/toalla-nicorobin.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 4,
+    "_id": "660725f2d49ab55bf9c00da1",
     "title": "Frazada Anime",
     "description": "Frazada Anime - Eve",
+    "category": "accesorios",
     "price": 30,
-    "thumbnail": "img/frazada-eve.jpg",
     "code": "C004",
-    "stock": 15
+    "stock": 15,
+    "thumbnails": [
+      "img/frazada-eve.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 5,
+    "_id": "660725f2d49ab55bf9c00d9c",
     "title": "Cuadro Ilustracion Metalica",
     "description": "Cuadro Ilustracion Metalica - One Piece",
+    "category": "decoración",
     "price": 15,
-    "thumbnail": "img/cuadrometalico-onepiece.jpg",
     "code": "C005",
-    "stock": 6
+    "stock": 6,
+    "thumbnails": [
+      "img/cuadrometalico-onepiece.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 6,
+    "_id": "660725f2d49ab55bf9c00d9d",
     "title": "Mouse Pad Anime",
     "description": "Mouse Pad Anime - Sakura Taisen",
+    "category": "accesorios",
     "price": 30,
-    "thumbnail": "img/mousepad-sakurataisen.jpg",
     "code": "C006",
-    "stock": 15
+    "stock": 15,
+    "thumbnails": [
+      "img/mousepad-sakurataisen.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 7,
+    "_id": "660725f2d49ab55bf9c00d9e",
     "title": "Folder Animes Variados",
     "description": "Folder Animes Variados",
+    "category": "papelería",
     "price": 20,
-    "thumbnail": "img/folderanimesvariados.jpg",
     "code": "C007",
-    "stock": 12
+    "stock": 12,
+    "thumbnails": [
+      "img/folderanimesvariados.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 8,
+    "_id": "660725f2d49ab55bf9c00da0",
     "title": "Shikishi Cuadro",
     "description": "Shikishi Cuadro - One Piece",
+    "category": "decoración",
     "price": 15,
-    "thumbnail": "img/shikishicuadro-onepiece.jpg",
     "code": "C008",
-    "stock": 15
+    "stock": 15,
+    "thumbnails": [
+      "img/shikishicuadro-onepiece.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 9,
+    "_id": "660725f2d49ab55bf9c00da2",
     "title": "Photo Card",
-    "description": "Photo Card- Tori Himemiya Ensemble Stars",
+    "description": "Photo Card - Tori Himemiya Ensemble Stars",
+    "category": "papelería",
     "price": 5,
-    "thumbnail": "img/photocard-tori.jpg",
     "code": "C009",
-    "stock": 15
+    "stock": 15,
+    "thumbnails": [
+      "img/photocard-tori.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 10,
+    "_id": "660725f2d49ab55bf9c00da3",
     "title": "Folder Anime",
     "description": "Folder Anime - One Piece",
+    "category": "papelería",
     "price": 10,
-    "thumbnail": "img/folder-onepiece.jpg",
     "code": "C010",
-    "stock": 10
+    "stock": 10,
+    "thumbnails": [
+      "img/folder-onepiece.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 11,
+    "_id": "66186ed0a20933fdd7e72d2e",
     "title": "Vaso Anime",
     "description": "Vaso Anime - Dragon Ball Z",
+    "category": "accesorios",
     "price": 15,
-    "thumbnail": "img/vaso-dbz.jpg",
     "code": "C011",
-    "stock": 2
+    "stock": 2,
+    "thumbnails": [
+      "img/vaso-dbz.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 12,
+    "_id": "6618700aa20933fdd7e72d4f",
     "title": "Almohada Anime",
     "description": "Almohada Anime - Kakkou no linazuke",
+    "category": "accesorios",
     "price": 30,
-    "thumbnail": "img/almohada-kakkou.jpg",
     "code": "C012",
-    "stock": 2
+    "stock": 2,
+    "thumbnails": [
+      "img/almohada-kakkou.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 13,
+    "_id": "6685d4171a934d89d4c36cb1",
     "title": "Figura Anime",
     "description": "Figura Anime - Vegeta DBZ",
+    "category": "figuras",
     "price": 50,
-    "thumbnail": "img/figura-vegeta.jpg",
     "code": "C013",
-    "stock": 1
+    "stock": 1,
+    "thumbnails": [
+      "img/figura-vegeta.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 14,
+    "_id": "6685d4171a934d89d4c36cb2",
     "title": "Figura Anime",
     "description": "Figura Anime - Midoriya Boku no Hero Academia",
+    "category": "figuras",
     "price": 50,
-    "thumbnail": "img/figura-midoriya.jpg",
     "code": "C014",
-    "stock": 1
+    "stock": 1,
+    "thumbnails": [
+      "img/figura-midoriya.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   },
   {
-    "id": 15,
+    "_id": "6685d4171a934d89d4c36cb3",
     "title": "Figura Anime",
     "description": "Figura Anime - Devil Homura Madogatari",
+    "category": "figuras",
     "price": 50,
-    "thumbnail": "img/figura-devil-homura.jpg",
     "code": "C015",
-    "stock": 1
+    "stock": 1,
+    "thumbnails": [
+      "img/figura-devil-homura.jpg"
+    ],
+    "status": true,
+    "owner": "admin",
+    "__v": 0
   }
 ]
